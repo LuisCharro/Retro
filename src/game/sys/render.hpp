@@ -14,10 +14,9 @@ struct EntityManager_t;
 
     template<typename GameCTX_t>
     struct RenderSystem_t
-    {
-        // Constructor por defecto --> = default
-        // explicit --> fuerza a que se escriba el tipo
-        explicit RenderSystem_t(int w, int h);//, EntityManager_t& m_EntMan);// = default;
+    {        
+        // explicit --> Forces to the user to write the type of the class
+        explicit RenderSystem_t(int w, int h);
 
         ~RenderSystem_t();
 

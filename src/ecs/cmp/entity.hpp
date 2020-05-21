@@ -14,8 +14,8 @@ namespace ECS {
 
 struct Entity_t
 {
-    //explicit Entity_t(){}
-     
+    
+    // Indication to use the default constructor --> = default
     explicit Entity_t() = default;
 
     template<typename CMP_t>

@@ -8,6 +8,8 @@ extern "C"
 #include <memory>
 #include <iostream>
 
+#include <game/cmp/collider.hpp>
+
 // Systems
 #include <game/sys/input.tpp>
 #include <game/sys/render.tpp>
@@ -69,13 +71,19 @@ ECS::Entity_t& CreateRectangleEntity(ECS::EntityManager_t& EntityMan, uint32_t x
     auto& e  = EntityMan.CreateEntity();
     auto& rn = EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = EntityMan.AddComponent<PhysicsComponent_t>(e);
+    auto& cl = EntityMan.AddComponent<ColliderComponent_t>(e);
     
     ph.x = x; ph.y = y;
-    ph.vy = ph.vy = 3;
+    ph.vy = ph.vy = 3;   
 
     rn.SetDimensions(w,h);
 
     std::fill(begin(rn.sprite), end(rn.sprite),color);
+
+    cl.box.xLeft = 0;
+    cl.box.xRight = rn.w;
+    cl.box.yUp = rn.h;
+    cl.box.yDown = 0;
 
     return e;
 }
@@ -85,9 +93,10 @@ ECS::Entity_t& CreateSpriteEntity(ECS::EntityManager_t& EntityMan, uint32_t x, u
     auto& e  = EntityMan.CreateEntity();
     auto& rn = EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = EntityMan.AddComponent<PhysicsComponent_t>(e);
+    auto& cl = EntityMan.AddComponent<ColliderComponent_t>(e);
 
     ph.x = x; ph.y = y;
-    ph.vy = ph.vy = 3;
+    ph.vy = ph.vy = 3;    
 
     rn.SetDimensions(w,h);
 
@@ -98,6 +107,11 @@ ECS::Entity_t& CreateSpriteEntity(ECS::EntityManager_t& EntityMan, uint32_t x, u
     std::copy ( sprite, sprite+dataArraySize , rn.sprite.begin());
     //https://stackoverflow.com/questions/259297/how-do-you-copy-the-contents-of-an-array-to-a-stdvector-in-c-without-looping
 
+    cl.box.xLeft = 0;
+    cl.box.xRight = rn.w;
+    cl.box.yUp = rn.h;
+    cl.box.yDown = 0;
+
     return e;
 }
 
@@ -106,12 +120,18 @@ ECS::Entity_t& CreateEntity(ECS::EntityManager_t& EntityMan, uint32_t x, uint32_
     auto& e  = EntityMan.CreateEntity();
     auto& rn = EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = EntityMan.AddComponent<PhysicsComponent_t>(e);
+    auto& cl = EntityMan.AddComponent<ColliderComponent_t>(e);
 
     rn.transparency = true;
 
     rn.LoadFromFile(filename);
     ph.x = x; ph.y = y;
     ph.vy = ph.vy = 3;
+
+    cl.box.xLeft = 0;
+    cl.box.xRight = rn.w;
+    cl.box.yUp = rn.h;
+    cl.box.yDown = 0;
 
     return e;
 }
@@ -133,9 +153,9 @@ int main(int argc, char const *argv[])
     try
     {
         // Systems
-        const RenderSystem_t<ECS::EntityManager_t> Render(kSCRWIDTH,kSCRHEIGHT);
+        const RenderSystem_t<ECS::EntityManager_t> Render{kSCRWIDTH,kSCRHEIGHT};
         PhysicsSystem_t<ECS::EntityManager_t> Physics;
-        CollisionSystem_t<ECS::EntityManager_t> Collision;
+        CollisionSystem_t<ECS::EntityManager_t> Collision{kSCRWIDTH,kSCRHEIGHT};
         InputSystem_t<ECS::EntityManager_t> Input;
 
         // Entities
