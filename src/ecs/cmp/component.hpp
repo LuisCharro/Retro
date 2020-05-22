@@ -17,14 +17,30 @@ namespace ECS
         // and it saves the result instead put the code + calls
         constexpr EntityID_t GetEntityID() const noexcept {return entityID;}
 
+        protected:
+            // Declaration + Definition (inline) [No need to define in the ".cpp"]
+            inline static ComponentTypeID_t nextTypeId {0};
+
         private:
 
-            //Create the type ComponentID like in Entity
-            ComponentID_t ComponentID {++nextID};
             EntityID_t entityID {0};
-
-            // Declaration + Definition (inline)
-            inline static ComponentID_t nextID {0};
     };
-    
+
+    // Added a Base class to use CRTP (Curiously Recurring Template Pattern) 
+    // static inheritance
+
+    template<typename TYPE>
+    struct ComponentBase_t : Component_t
+    {
+        explicit ComponentBase_t(EntityID_t eid) 
+            : Component_t(eid) {}
+
+        //For every type used --> I will get "an Id" 
+        //This will be used for the class componentStorage_t to select Vec_t<CMP_t> components with that Id
+        static ComponentTypeID_t getComponentTypeID() noexcept
+        {
+            static ComponentTypeID_t typeID {++nextTypeId};
+            return typeID;
+        }
+    };    
 }

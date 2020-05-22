@@ -10,25 +10,19 @@
 
 //namespace GAME {
 
-struct InputComponent_t : public ECS::Component_t
+struct InputComponent_t : public ECS::ComponentBase_t<InputComponent_t>
 {
-    //The constructor is incomplete once we had added herency
+    //The constructor is incomplete once we had added herency --> We can not use default
     //explicit PhysicsComponent_t () = default;
 
     explicit InputComponent_t (ECS::EntityID_t eid)
-    : ECS::Component_t(eid)
+    : ComponentBase_t(eid)//Component_t(eid)
     {
     }
-
-    static ECS::ComponentTypeID_t getComponentTypeID() noexcept {
-        return static_cast<ECS::ComponentTypeID_t>(1);
-    }
-
-    //private:
-       KeySym Key_LEFT {XK_o};
-       KeySym Key_RIGHT {XK_p};
-       KeySym Key_UP {XK_q};
-       KeySym Key_DOWN {XK_a};
+        KeySym Key_LEFT {XK_o};
+        KeySym Key_RIGHT {XK_p};
+        KeySym Key_UP {XK_q};
+        KeySym Key_DOWN {XK_a};
 };
 
 

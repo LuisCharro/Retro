@@ -17,10 +17,10 @@
 
 //namespace GAME {
 
-struct RenderComponent_t : ECS::Component_t
+struct RenderComponent_t : ECS::ComponentBase_t<RenderComponent_t>
 {
     explicit RenderComponent_t(ECS::EntityID_t eid, uint32_t w0, uint32_t h0) 
-    : ECS::Component_t(eid)
+    : ComponentBase_t(eid)
     , w (w0)
     , h (h0)
     {
@@ -28,13 +28,9 @@ struct RenderComponent_t : ECS::Component_t
     }
 
     explicit RenderComponent_t(ECS::EntityID_t eid) 
-    : ECS::Component_t(eid)
+    : ComponentBase_t(eid)
     {
         
-    }
-
-    static ECS::ComponentTypeID_t getComponentTypeID() noexcept {
-        return static_cast<ECS::ComponentTypeID_t>(3);
     }
 
     void SetDimensions(uint32_t w0, uint32_t h0);

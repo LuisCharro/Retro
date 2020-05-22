@@ -8,10 +8,6 @@
 
 //namespace ECS {
 
-// Forward declaration
-// For the compiler --> This symbol is an struct 
-struct EntityManager_t;
-
     template<typename GameCTX_t>
     struct RenderSystem_t
     {        
