@@ -15,6 +15,7 @@ extern "C"
 #include <game/sys/render.tpp>
 #include <game/sys/physics.tpp>
 #include <game/sys/collision.tpp>
+#include <game/sys/spawn.tpp>
 
 // Managers
 #include <ecs/man/entitymanager.hpp>
@@ -74,7 +75,7 @@ ECS::Entity_t& CreateRectangleEntity(ECS::EntityManager_t& EntityMan, uint32_t x
     auto& cl = EntityMan.AddComponent<ColliderComponent_t>(e);
     
     ph.x = x; ph.y = y;
-    ph.vy = ph.vy = 3;   
+    ph.vx = ph.vy = 3; 
 
     rn.SetDimensions(w,h);
 
@@ -96,7 +97,7 @@ ECS::Entity_t& CreateSpriteEntity(ECS::EntityManager_t& EntityMan, uint32_t x, u
     auto& cl = EntityMan.AddComponent<ColliderComponent_t>(e);
 
     ph.x = x; ph.y = y;
-    ph.vy = ph.vy = 3;    
+    ph.vx = ph.vy = 3; 
 
     rn.SetDimensions(w,h);
 
@@ -125,8 +126,9 @@ ECS::Entity_t& CreateEntity(ECS::EntityManager_t& EntityMan, uint32_t x, uint32_
     rn.transparency = true;
 
     rn.LoadFromFile(filename);
+
     ph.x = x; ph.y = y;
-    ph.vy = ph.vy = 3;
+    ph.vx = ph.vy = 3; 
 
     cl.box.xLeft = 0;
     cl.box.xRight = rn.w;
@@ -147,6 +149,15 @@ void CreateEnemy(ECS::EntityManager_t& EntityMan, uint32_t x, uint32_t y)
 {
     CreateEntity(EntityMan, x, y, "assets/fantasma.png");    
 }
+
+void CreateSpawner(ECS::EntityManager_t& EntityMan, uint32_t x, uint32_t y)
+{
+    auto& e  = EntityMan.CreateEntity();
+    [[maybe_unused]]auto& spw = EntityMan.AddComponent<SpawnerComponent_t>(e);
+    auto& ph = EntityMan.AddComponent<PhysicsComponent_t>(e);
+
+    ph.x = x; ph.y = y;
+}
  
 int main(int argc, char const *argv[])
 {
@@ -157,6 +168,7 @@ int main(int argc, char const *argv[])
         PhysicsSystem_t<ECS::EntityManager_t> Physics;
         CollisionSystem_t<ECS::EntityManager_t> Collision{kSCRWIDTH,kSCRHEIGHT};
         InputSystem_t<ECS::EntityManager_t> Input;
+        SpawnSystem_t<ECS::EntityManager_t> Spawn;
 
         // Entities
         ECS::EntityManager_t EntityMan;
@@ -166,6 +178,8 @@ int main(int argc, char const *argv[])
 
         CreatePlayer(EntityMan, 400,100);
         CreateEnemy(EntityMan, 100,100);
+
+        CreateSpawner(EntityMan,200,1);
         
         // Main Loop
         while (Render.Update(EntityMan))
@@ -173,6 +187,7 @@ int main(int argc, char const *argv[])
             Input.Update(EntityMan);
             Physics.Update(EntityMan);
             Collision.Update(EntityMan);
+            Spawn.Update(EntityMan);
         }        
     }
     catch (const char* s)

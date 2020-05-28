@@ -23,10 +23,6 @@ struct ColliderComponent_t : public ECS::ComponentBase_t<ColliderComponent_t>
     {
     }
 
-    static ECS::ComponentTypeID_t getComponentTypeID() noexcept {
-        return static_cast<ECS::ComponentTypeID_t>(4);
-    }
-
     BoundingBox_t box;
 };
 
