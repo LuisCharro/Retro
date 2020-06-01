@@ -70,9 +70,22 @@ int main(int argc, char const *argv[])
         GOFact.CreateSpriteEntity(50,50,8,8, sprite);
 
         GOFact.CreatePlayer(400,100);
-        GOFact.CreateEnemy(100,100);
+        GOFact.CreateGhost(100,100);
 
-        GOFact.CreateSpawner(200,1);
+        GOFact.CreateSpawner(200,1,
+            // Adding as parameter a Lambda with "a function as parameter" 
+            [&](const SpawnerComponent_t& spw)
+            {
+                std::cout << "Using lambda to invokate a method" << std::endl;
+                const auto* spawnerEntity = EntityMan.GetEntityByID(spw.GetEntityID());
+
+                if (!spawnerEntity) return;
+                const auto* phy = spawnerEntity->getComponent<PhysicsComponent_t>();
+                if (!phy) return;
+
+                [[maybe_unused]]auto& e = GOFact.CreateGhost(phy->x, phy->y);
+            }
+        );
         
         // Main Loop
         while (Render.Update(EntityMan))

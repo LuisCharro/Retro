@@ -1,16 +1,9 @@
+#include <iostream>
+
 #include "gameobjectfactory.hpp"
 
-#include <game/cmp/collider.hpp>
-#include <game/cmp/input.hpp>
-#include <game/cmp/physics.hpp>
-#include <game/cmp/render.hpp>
-#include <game/cmp/spawner.hpp>
-
-#include <ecs/cmp/entity.hpp>
-#include "ecs/man/entitymanager.hpp"
-
 ECS::Entity_t& 
-GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color)
+GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color) const
 {
     auto& e  = m_EntityMan.CreateEntity();
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
@@ -33,7 +26,7 @@ GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, u
 }
 
 ECS::Entity_t& 
-GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint32_t sprite[])
+GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint32_t sprite[]) const
 {
     auto& e  = m_EntityMan.CreateEntity();
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
@@ -61,7 +54,7 @@ GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint
 }
 
 ECS::Entity_t& 
-GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view  filename)
+GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view  filename) const
 {
     auto& e  = m_EntityMan.CreateEntity();
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
@@ -84,7 +77,7 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
 }
 
 ECS::Entity_t&  
-GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y)
+GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y) const
 {
     // Without the &, I will create a copy and I will not touch the variable    
     auto& e  = CreateEntity(x, y, "assets/ninja.png");
@@ -94,20 +87,8 @@ GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y)
 }
 
 ECS::Entity_t& 
-GameObjectFactory_t::CreateEnemy(uint32_t x, uint32_t y)
+GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
 {
     auto& e  = CreateEntity(x, y, "assets/fantasma.png");
     return e; 
-}
-
-ECS::Entity_t& 
-GameObjectFactory_t::CreateSpawner(uint32_t x, uint32_t y)
-{
-    auto& e  = m_EntityMan.CreateEntity();
-    [[maybe_unused]]auto& spw = m_EntityMan.AddComponent<SpawnerComponent_t>(e);
-    auto& ph = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
-
-    ph.x = x; ph.y = y;
-
-    return e;
 }

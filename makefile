@@ -104,6 +104,7 @@ $(OBJSUBDIRS) :
 	$(MKDIR) $(OBJSUBDIRS)
 
 #make clean; make DEBUG=1
+#cgdb ./game
 #lldb ./game
 
 

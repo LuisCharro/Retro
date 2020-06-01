@@ -3,6 +3,15 @@
 #include <cstdint>
 #include <string_view>
 
+#include <game/cmp/collider.hpp>
+#include <game/cmp/input.hpp>
+#include <game/cmp/physics.hpp>
+#include <game/cmp/render.hpp>
+#include <game/cmp/spawner.hpp>
+
+#include <ecs/cmp/entity.hpp>
+#include "ecs/man/entitymanager.hpp"
+
 //Forward declaration
 namespace ECS {
     struct EntityManager_t;
@@ -32,12 +41,40 @@ struct GameObjectFactory_t
     {
     }
     
-    ECS::Entity_t& CreateEntity(uint32_t x, uint32_t y, const std::string_view  filename);
-    ECS::Entity_t& CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color);
-    ECS::Entity_t& CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint32_t sprite[]);    
-    ECS::Entity_t& CreatePlayer(uint32_t x, uint32_t y);
-    ECS::Entity_t& CreateEnemy(uint32_t x, uint32_t y);
-    ECS::Entity_t& CreateSpawner(uint32_t x, uint32_t y);
+    ECS::Entity_t& CreateEntity(uint32_t x, uint32_t y, const std::string_view  filename) const;
+    ECS::Entity_t& CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color) const;
+    ECS::Entity_t& CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint32_t sprite[]) const;    
+    ECS::Entity_t& CreatePlayer(uint32_t x, uint32_t y) const;
+    ECS::Entity_t& CreateGhost(uint32_t x, uint32_t y) const;    
+
+    template <typename CALLABLE_t>
+    ECS::Entity_t& 
+    CreateSpawner(uint32_t x, uint32_t y, CALLABLE_t callback) const
+    {
+        auto& e  = m_EntityMan.CreateEntity();
+        auto& spw = m_EntityMan.AddComponent<SpawnerComponent_t>(e);
+        auto& phy = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
+        auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
+        auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
+
+        rn.transparency = true;
+        rn.LoadFromFile("assets/tomb.png");
+
+        cl.box.xLeft = 0;
+        cl.box.xRight = rn.w;
+        cl.box.yUp = rn.h;
+        cl.box.yDown = 0;    
+
+        phy.x = x; phy.y = y;
+        phy.vy = 1;
+
+        // Adding a delegate by Lambda expresion
+        // We need to pass x and y as value (not by reference) because:
+        //  - When the SpawnMethod is called the variables x and y does not exist (scope of variables)
+        spw.SpawnMethod = callback;       
+       
+        return e;
+    }
 
     private:
         ECS::EntityManager_t& m_EntityMan;
