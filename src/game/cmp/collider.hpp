@@ -12,7 +12,6 @@ struct BoundingBox_t
     uint32_t yUp {0}, yDown {0}; 
 };
 
-
 struct ColliderComponent_t : public ECS::ComponentBase_t<ColliderComponent_t>
 {
     //The constructor is incomplete once we had added herency

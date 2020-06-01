@@ -34,6 +34,34 @@ struct EntityManager_t
       return m_Entity.emplace_back();
     }
 
+    template <typename CMP_t>
+    Entity_t* GetEntityPointerFromComponent(const CMP_t& cmp)
+    {
+        return GetEntityByID(cmp.GetEntityID());        
+    }
+
+    template <typename CMP_t>
+    const Entity_t* GetEntityPointerFromComponent(const CMP_t& cmp) const
+    {
+        return GetEntityByID(cmp.GetEntityID());        
+    }
+
+    template <typename CMP_t, typename ReqCMP_t>
+    const ReqCMP_t* GetRequiredComponent(const CMP_t& cmp) const
+    {
+      auto* e = GetEntityPointerFromComponent(cmp);
+      
+      if (e) return e->template getComponent<ReqCMP_t>();
+      return nullptr;
+    }
+
+    template <typename CMP_t, typename ReqCMP_t>
+    ReqCMP_t* GetRequiredComponent(const CMP_t& cmp)
+    {
+      const ReqCMP_t* rc = const_cast<const EntityManager_t*>(this)->GetRequiredComponent<CMP_t,ReqCMP_t>(cmp);
+      return const_cast<ReqCMP_t*>(rc);
+    }
+
     const Entity_t* GetEntityByID(EntityID_t eid) const;
           Entity_t* GetEntityByID(EntityID_t eid)      ;
 

@@ -11,9 +11,7 @@ struct ColliderComponent_t;
 template<typename GameCTX_t>
 struct CollisionSystem_t
 {
-    explicit CollisionSystem_t(uint32_t w, uint32_t h);
-
-    PhysicsComponent_t* GetRequiredComponent(GameCTX_t& g, ColliderComponent_t& col) const;
+    explicit CollisionSystem_t(uint32_t w, uint32_t h);   
     
     bool Update(GameCTX_t& g) const;   
 

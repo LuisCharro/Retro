@@ -16,29 +16,14 @@
         : m_w(w), m_h(h)
     {        
     }
-
-    template<typename GameCTX_t>
-    PhysicsComponent_t*
-    CollisionSystem_t<GameCTX_t>::GetRequiredComponent(GameCTX_t& g, ColliderComponent_t& col) const
-    {
-        auto* e = g.GetEntityByID(col.GetEntityID());
-
-        if (e)
-        {
-            auto* ph = e->template getComponent<PhysicsComponent_t>();
-            return ph;
-        }
-
-        return nullptr;
-    }
-
+   
     template<typename GameCTX_t>
     bool 
     CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
     {
         for (auto& col : g.template GetComponents<ColliderComponent_t>()) 
-        {
-            auto* phy = GetRequiredComponent(g, col);
+        {            
+            auto* phy = g.template GetRequiredComponent<ColliderComponent_t, PhysicsComponent_t>(col);
 
             if (!phy) { continue; }
 

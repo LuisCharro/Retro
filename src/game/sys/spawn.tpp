@@ -12,22 +12,6 @@
 #include <game/cmp/spawner.hpp>
 
 //namespace ECS {
-    
-    template<typename GameCTX_t>
-    PhysicsComponent_t*
-    SpawnSystem_t<GameCTX_t>::GetRequiredComponent(GameCTX_t& g, SpawnerComponent_t& spw) const
-    {
-        auto* e = g.GetEntityByID(spw.GetEntityID());
-
-        if (e)
-        {
-            auto* ph = e->template getComponent<PhysicsComponent_t>();
-            return ph;
-        }
-
-        return nullptr;
-    }
-
     template<typename GameCTX_t>
     void 
     SpawnSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
@@ -40,7 +24,7 @@
 
         for (auto& spw : g.template GetComponents<SpawnerComponent_t>()) 
         {
-            auto* phy = GetRequiredComponent(g, spw);
+            auto* phy = g.template GetRequiredComponent<SpawnerComponent_t, PhysicsComponent_t>(spw);
 
             if (!phy) continue;
 
