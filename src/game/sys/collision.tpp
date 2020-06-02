@@ -23,7 +23,7 @@
     {
         for (auto& col : g.template GetComponents<ColliderComponent_t>()) 
         {            
-            auto* phy = g.template GetRequiredComponent<ColliderComponent_t, PhysicsComponent_t>(col);
+            auto* phy = g.template GetRequiredComponent<PhysicsComponent_t>(col);
 
             if (!phy) { continue; }
 

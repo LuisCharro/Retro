@@ -24,7 +24,7 @@
 
         for (auto& spw : g.template GetComponents<SpawnerComponent_t>()) 
         {
-            auto* phy = g.template GetRequiredComponent<SpawnerComponent_t, PhysicsComponent_t>(spw);
+            auto* phy = g.template GetRequiredComponent<PhysicsComponent_t>(spw);
 
             if (!phy) continue;
 

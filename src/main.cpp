@@ -78,13 +78,11 @@ int main(int argc, char const *argv[])
             [&](const SpawnerComponent_t& spw)
             {
                 std::cout << "Using lambda to invokate a method" << std::endl;
-                const auto* spawnerEntity = EntityMan.GetEntityByID(spw.GetEntityID());
+                const auto* phy = EntityMan.GetRequiredComponent<PhysicsComponent_t>(spw);
 
-                if (!spawnerEntity) return;
-                const auto* phy = spawnerEntity->getComponent<PhysicsComponent_t>();
                 if (!phy) return;
 
-                [[maybe_unused]]auto& e = GOFact.CreateGhost(phy->x, phy->y);
+                [[maybe_unused]]auto& e = GOFact.CreateGhost(phy->x, phy->y);                
             }
         );
         
