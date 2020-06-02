@@ -21,8 +21,9 @@ struct RenderSystem_t
     bool Update(const GameCTX_t& g) const; // It does not modify the data of the class    
     void DrawAllEntities(const GameCTX_t& g) const noexcept;
 
-    constexpr void SetDebugDraw(bool v) noexcept {m_debugDraw = v;}
-    constexpr void SetDebugColor(uint32_t c) noexcept {m_debugColor = c;}
+    constexpr void SetDebugDraw(bool v) const noexcept {m_debugDraw = v;}
+    constexpr void SetDebugColor(uint32_t c) const noexcept {m_debugColor = c;}
+    
     [[nodiscard]] constexpr bool DebugDraw() const noexcept {return m_debugDraw;}
     [[nodiscard]] constexpr bool DebugColor() const noexcept {return m_debugColor;}
 
@@ -44,10 +45,10 @@ struct RenderSystem_t
         static constexpr uint32_t kBlack = 0x00000000;      // Black
         static constexpr uint32_t kRedAlfa = 0xFFFF0000;    // Red + Alfa
 
-        bool m_debugDraw  {true};
-        uint32_t m_debugColor {kRedAlfa};
+        mutable bool m_debugDraw  {true};
+        mutable uint32_t m_debugColor {kRedAlfa};
+
         const uint32_t m_w {0}, m_h{0};
-        
         //A default constructor will add those values (If, I do not indicate diferently on they)
         std::unique_ptr<uint32_t[]>  m_framebuffer { nullptr };            
 };

@@ -55,7 +55,7 @@ int main(int argc, char const *argv[])
     try
     {
         // Systems        
-        RenderSystem_t<ECS::EntityManager_t> Render{kSCRWIDTH,kSCRHEIGHT};
+        const RenderSystem_t<ECS::EntityManager_t> Render{kSCRWIDTH,kSCRHEIGHT};
         PhysicsSystem_t<ECS::EntityManager_t> Physics;
         CollisionSystem_t<ECS::EntityManager_t> Collision{kSCRWIDTH,kSCRHEIGHT};
         InputSystem_t<ECS::EntityManager_t> Input;
