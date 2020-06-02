@@ -107,5 +107,7 @@ $(OBJSUBDIRS) :
 #cgdb ./game
 #lldb ./game
 
+# Stops execution when we do a wrong usage of pointers/Heap usage
+#-fsanitize=address
 
 # -f noexception compilacion final
