@@ -18,7 +18,7 @@ namespace ECS {
     struct Entity_t;
 }
 
-constexpr uint32_t kR = 0x00FF0000;
+    constexpr uint32_t kR = 0x00FF0000;
     constexpr uint32_t kG = 0x0000FF00;
     constexpr uint32_t kB = 0x000000FF;
   
