@@ -3,14 +3,7 @@
 #include <cstdint>
 
 #include <ecs/cmp/component.hpp>
-
-//namespace GAME {
-
-struct BoundingBox_t
-{
-    uint32_t xLeft {0}, xRight {0};
-    uint32_t yUp {0}, yDown {0}; 
-};
+#include "box.hpp"
 
 struct ColliderComponent_t : public ECS::ComponentBase_t<ColliderComponent_t>
 {
@@ -22,7 +15,6 @@ struct ColliderComponent_t : public ECS::ComponentBase_t<ColliderComponent_t>
     {
     }
 
-    BoundingBox_t box;
+    // Composite pattern
+    BoundingBoxNode_t boxRoot {};
 };
-
-//}

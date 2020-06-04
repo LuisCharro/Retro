@@ -17,10 +17,10 @@ GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, u
 
     std::fill(begin(rn.sprite), end(rn.sprite),color);
 
-    cl.box.xLeft = 0;
-    cl.box.xRight = rn.w;
-    cl.box.yUp = rn.h;
-    cl.box.yDown = 0;
+    cl.boxRoot.box.xLeft = 0;
+    cl.boxRoot.box.xRight = rn.w;
+    cl.boxRoot.box.yUp = rn.h;
+    cl.boxRoot.box.yDown = 0;
 
     return e;
 }
@@ -45,10 +45,10 @@ GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint
     std::copy ( sprite, sprite+dataArraySize , rn.sprite.begin());
     //https://stackoverflow.com/questions/259297/how-do-you-copy-the-contents-of-an-array-to-a-stdvector-in-c-without-looping
 
-    cl.box.xLeft = 0;
-    cl.box.xRight = rn.w;
-    cl.box.yUp = rn.h;
-    cl.box.yDown = 0;
+    cl.boxRoot.box.xLeft = 0;
+    cl.boxRoot.box.xRight = rn.w;
+    cl.boxRoot.box.yUp = rn.h;
+    cl.boxRoot.box.yDown = 0;
 
     return e;
 }
@@ -68,10 +68,10 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
     ph.x = x; ph.y = y;
     ph.vx = ph.vy = 3; 
 
-    cl.box.xLeft = 0;
-    cl.box.xRight = rn.w;
-    cl.box.yUp = rn.h;
-    cl.box.yDown = 0;
+    cl.boxRoot.box.xLeft = 0;
+    cl.boxRoot.box.xRight = rn.w;
+    cl.boxRoot.box.yUp = rn.h;
+    cl.boxRoot.box.yDown = 0;
 
     return e;
 }
@@ -82,6 +82,24 @@ GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y) const
     // Without the &, I will create a copy and I will not touch the variable    
     auto& e  = CreateEntity(x, y, "assets/ninja.png");
     m_EntityMan.AddComponent<InputComponent_t>(e);
+
+    auto* c = e.getComponent<ColliderComponent_t>();
+    
+    if (c)
+    {
+        c->boxRoot.box= {3,37,4,72};
+        c->boxRoot.childs =  {
+                { { 4, 36, 5, 33},
+                    { 
+                        { {12,34,20,29}, {} }
+                    }
+                }
+            ,   { {10, 30, 34, 52}, {} } 
+            ,   { { 4,  9, 36, 51}, {} } 
+            ,   { {31, 35, 36, 51}, {} } 
+            ,   { { 6, 34, 54, 71}, {} } 
+        };
+    }
 
     return e;
 }

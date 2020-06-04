@@ -60,10 +60,10 @@ struct GameObjectFactory_t
         rn.transparency = true;
         rn.LoadFromFile("assets/tomb.png");
 
-        cl.box.xLeft = 0;
-        cl.box.xRight = rn.w;
-        cl.box.yUp = rn.h;
-        cl.box.yDown = 0;    
+        cl.boxRoot.box.xLeft = 0;
+        cl.boxRoot.box.xRight = rn.w;
+        cl.boxRoot.box.yUp = rn.h;
+        cl.boxRoot.box.yDown = 0;    
 
         phy.x = x; phy.y = y;
         phy.vy = 1;

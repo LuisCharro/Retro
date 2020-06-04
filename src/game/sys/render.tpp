@@ -52,11 +52,7 @@ RenderSystem_t<GameCTX_t>::DrawAllEntities(const GameCTX_t& g) const noexcept
     std::for_each(begin(rendcmps),end(rendcmps), [&](const auto&rc)
     {
         // RenderComponent_t must be of an entity that also has a PhysicsComponent_t
-        const auto* eptr = g.GetEntityByID(rc.GetEntityID());
-
-        if (!eptr) return;
-
-        const auto* phy = eptr->template getComponent<PhysicsComponent_t>();
+        const auto* phy = g.template GetRequiredComponent<PhysicsComponent_t>(rc);
 
         if (!phy) return;
 
@@ -65,11 +61,11 @@ RenderSystem_t<GameCTX_t>::DrawAllEntities(const GameCTX_t& g) const noexcept
         // If DebugDraw is active, also draw Horizontalline
         if (m_debugDraw)
         {
-            const auto* col = eptr->template getComponent<ColliderComponent_t>();
+            const auto* col = g.template GetRequiredComponent<ColliderComponent_t>(rc);
 
             if (!col) return;
-
-            DrawBox(col->box, phy->x, phy->y, m_debugColor);
+                        
+            DrawBoxTree(col->boxRoot, phy->x, phy->y, m_debugColor);
         }
     });
 }
@@ -282,4 +278,14 @@ RenderSystem_t<GameCTX_t>::DrawBox (const BoundingBox_t& box, uint32_t x, uint32
     RenderAlignedLineClipped(x1, x2, y2, false, color);
     RenderAlignedLineClipped(y1, y2, x1, true, color);
     RenderAlignedLineClipped(y1, y2, x2, true, color);
+}
+template<typename GameCTX_t>
+constexpr void 
+RenderSystem_t<GameCTX_t>::DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32_t x, uint32_t y, uint32_t color) const noexcept
+{
+    DrawBox(boxNode.box, x, y, color);
+    for(auto& node : boxNode.childs)
+    {
+        DrawBoxTree(node, x, y, color >> 1);
+    }
 }

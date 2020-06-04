@@ -28,10 +28,10 @@
             if (!phy) { continue; }
 
             // Coordinate conversion -> to screen coordinates
-            auto xl { phy->x + col.box.xLeft };
-            auto xr { phy->x + col.box.xRight };
-            auto yu { phy->y + col.box.yUp };
-            auto yd { phy->y + col.box.yDown };
+            auto xl { phy->x + col.boxRoot.box.xLeft };
+            auto xr { phy->x + col.boxRoot.box.xRight };
+            auto yu { phy->y + col.boxRoot.box.yUp };
+            auto yd { phy->y + col.boxRoot.box.yDown };
 
             if ( xl > m_w || xr > m_w)
             {

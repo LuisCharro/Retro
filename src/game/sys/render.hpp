@@ -37,6 +37,7 @@ struct RenderSystem_t
         constexpr void RenderAlignedLineClipped (uint32_t x1, uint32_t x2, uint32_t y, bool yaxis, uint32_t pixel) const noexcept;
         constexpr void RenderAlignedBoxClipped (BoundingBox_t box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept;
         constexpr void DrawBox (const BoundingBox_t& box, uint32_t x, uint32_t y, uint32_t color) const noexcept;
+        constexpr void DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32_t x, uint32_t y, uint32_t color) const noexcept;
 
         static constexpr uint32_t kR = 0x00FF0000; // Red
         static constexpr uint32_t kG = 0x0000FF00; // Green
