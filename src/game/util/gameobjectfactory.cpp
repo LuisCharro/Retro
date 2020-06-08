@@ -66,7 +66,7 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
     rn.LoadFromFile(filename);
 
     ph.x = x; ph.y = y;
-    ph.vx = ph.vy = 3; 
+    ph.vx = ph.vy = 0; 
 
     cl.boxRoot.box.xLeft = 0;
     cl.boxRoot.box.xRight = rn.w;
@@ -89,15 +89,15 @@ GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y) const
     {
         c->boxRoot.box= {3,37,4,72};
         c->boxRoot.childs =  {
-                { { 4, 36, 5, 33},
+                { { 4, 36, 5, 33}, false,
                     { 
-                        { {12,34,20,29}, {} }
+                        { {12,34,20,29}, false, {}}
                     }
                 }
-            ,   { {10, 30, 34, 52}, {} } 
-            ,   { { 4,  9, 36, 51}, {} } 
-            ,   { {31, 35, 36, 51}, {} } 
-            ,   { { 6, 34, 54, 71}, {} } 
+            ,   { {10, 30, 34, 52}, false, {}} 
+            ,   { { 4,  9, 36, 51}, false, {}} 
+            ,   { {31, 35, 36, 51}, false, {}} 
+            ,   { { 6, 34, 54, 71}, false, {}} 
         };
     }
 
@@ -108,5 +108,15 @@ ECS::Entity_t&
 GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
 {
     auto& e  = CreateEntity(x, y, "assets/fantasma.png");
+    auto* c = e.getComponent<ColliderComponent_t>();
+    auto* rn = e.getComponent<RenderComponent_t>();
+    auto* ph = e.getComponent<PhysicsComponent_t>();    
+
+    c->boxRoot.box.xLeft  = 10;
+    c->boxRoot.box.xRight = rn->w-10;
+    c->boxRoot.box.yUp    = rn->h - 10;
+    c->boxRoot.box.yDown  = 10;
+
+    ph->vx = ph->vy = 3; 
     return e; 
 }

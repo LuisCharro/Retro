@@ -11,5 +11,6 @@ struct BoundingBox_t
 struct BoundingBoxNode_t
 {
     BoundingBox_t box;
+    bool collided {false};
     std::vector<BoundingBoxNode_t> childs;
 };

@@ -68,10 +68,10 @@ int main(int argc, char const *argv[])
         GameObjectFactory_t GOFact {EntityMan};
 
         GOFact.CreateRectangleEntity(10,10,16,16, 0x00FFFFFF);
-        GOFact.CreateSpriteEntity(50,50,8,8, sprite);
+        GOFact.CreateSpriteEntity(100,50,8,8, sprite);
 
-        GOFact.CreatePlayer(400,100);
-        GOFact.CreateGhost(100,100);
+        GOFact.CreatePlayer(200,100);
+        GOFact.CreateGhost(300,100);
 
         GOFact.CreateSpawner(200,1,
             // Adding as parameter a Lambda with "a function as parameter" 

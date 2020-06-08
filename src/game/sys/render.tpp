@@ -29,6 +29,7 @@ RenderSystem_t<GameCTX_t>::~RenderSystem_t(){
     ptc_close();
 }    
 
+//Revised
 template<typename GameCTX_t>
 bool
 RenderSystem_t<GameCTX_t>::Update(const GameCTX_t& g)const
@@ -44,6 +45,7 @@ RenderSystem_t<GameCTX_t>::Update(const GameCTX_t& g)const
     return !ptc_process_events();
 }
 
+//Revised but with code after modifications
 template<typename GameCTX_t>
 void 
 RenderSystem_t<GameCTX_t>::DrawAllEntities(const GameCTX_t& g) const noexcept
@@ -154,6 +156,7 @@ RenderSystem_t<GameCTX_t>::RenderSpriteClipped(const RenderComponent_t& ren, con
     }
 }
 
+//Revised
 template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderInScreenBox (uint32_t* screen, const BoundingBox_t& box, uint32_t pixel) const noexcept
@@ -161,19 +164,29 @@ RenderSystem_t<GameCTX_t>::RenderInScreenBox (uint32_t* screen, const BoundingBo
     const uint32_t width { box.xRight - box.xLeft };
     uint32_t height { box.yDown - box.yUp };
 
+    //4294966462
+    //4000000000
+    if (height >= 4000000000)
+    {
+        std::cout << "Break RenderInScreenBox" << std::endl; 
+        return;
+    }
+
     while (height--)
     {
         uint32_t x {width};
         while (x--)
         {
+            //std::cout << "RenderInScreenBox width: " << width << " height: " << height << " x: " << x << std::endl; 
             *screen = pixel;
             screen++;
         }
         
-        *screen += m_w - width;
+        screen += m_w - width;
     }
 }
 
+//Revised
 template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderInScreenLine (uint32_t* screen, uint32_t length, uint32_t stride, uint32_t pixel) const noexcept
@@ -186,6 +199,7 @@ RenderSystem_t<GameCTX_t>::RenderInScreenLine (uint32_t* screen, uint32_t length
     }
 }
 
+//Revised
 template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderAlignedLineClipped (uint32_t x1, uint32_t x2, uint32_t y, bool yaxis, uint32_t pixel) const noexcept
@@ -213,6 +227,7 @@ RenderSystem_t<GameCTX_t>::RenderAlignedLineClipped (uint32_t x1, uint32_t x2, u
 
     // Define and detect start and end of the line
     uint32_t xini {0}, xend {0};
+    
     if (x1 > x2) { xini = x2; xend = x1;}
     else         { xini = x1; xend = x2;}
 
@@ -232,10 +247,13 @@ RenderSystem_t<GameCTX_t>::RenderAlignedLineClipped (uint32_t x1, uint32_t x2, u
     RenderInScreenLine(screen, xend-xini, stride, pixel);
 }
 
+//Revised
 template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept
 {
+    //std::cout << "RenderAlignedBoxClipped" << std::endl; 
+
     //Crop function
     auto crop = [](uint32_t &val, uint32_t max, uint32_t inf)
     {
@@ -249,7 +267,7 @@ RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x
 
     // Convert Bounding Box to screen coordinates
     box.xLeft += x; box.xRight += x;
-    box.yUp += y; box.yDown += y;
+    box.yUp   += y; box.yDown  += y;
 
     //crop line to screen limits
     crop(box.xLeft,  m_w, xinfinite);
@@ -258,17 +276,20 @@ RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x
     crop(box.yDown,  m_h, yinfinite);
 
     // If box is off-screen, do not render
-    if (   box.xRight == 0 || box.xLeft == m_w
-        || box.yDown == 0 || box.yUp == m_h ) return;
+    if (   box.xRight == 0  || box.xLeft == m_w
+        || box.yDown  == 0  || box.yUp   == m_h ) return;
 
     // Render Box
     RenderInScreenBox(GetScreenXY(box.xLeft, box.yUp), box, pixel);
 }
 
+//Revised
 template<typename GameCTX_t>
 constexpr void 
 RenderSystem_t<GameCTX_t>::DrawBox (const BoundingBox_t& box, uint32_t x, uint32_t y, uint32_t color) const noexcept
 {
+    //std::cout << "DrawBox" << std::endl;
+
     uint32_t x1 { x + box.xLeft };
     uint32_t x2 { x + box.xRight };
     uint32_t y1 { y + box.yUp };
@@ -283,7 +304,17 @@ template<typename GameCTX_t>
 constexpr void 
 RenderSystem_t<GameCTX_t>::DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32_t x, uint32_t y, uint32_t color) const noexcept
 {
-    DrawBox(boxNode.box, x, y, color);
+    if (boxNode.collided)
+    {
+        std::cout << "if (boxNode.collided)" << std::endl;
+
+        RenderAlignedBoxClipped(boxNode.box, x, y, color);
+    }   
+    else
+    {
+        DrawBox(boxNode.box, x, y, color);
+    }
+
     for(auto& node : boxNode.childs)
     {
         DrawBoxTree(node, x, y, color >> 1);

@@ -17,7 +17,7 @@
 # $(5) : Compiler flags
 
 #file.o : file.c file.h
-#	comp -c -o file.o file.c -Wall -pedantic
+#	comp -c -o file.o file.c -Wall -pedantic 
 
 define COMPILE_RULE
 $(2) : $(3) $(4)
@@ -108,6 +108,6 @@ $(OBJSUBDIRS) :
 #lldb ./game
 
 # Stops execution when we do a wrong usage of pointers/Heap usage
-#-fsanitize=address
+#-fsanitize=address -fno-ommit-frame-pointer
 
 # -f noexception compilacion final
