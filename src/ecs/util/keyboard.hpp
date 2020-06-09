@@ -72,6 +72,9 @@ namespace ECS {
             ,   { XK_p    , false}
             ,   { XK_q    , false}
             ,   { XK_a    , false}
+            ,   { XK_d    , false}
+            ,   { XK_w    , false}
+            ,   { XK_s    , false}
 
             ,   { XK_KP_Left     , false}
             ,   { XK_KP_Up     , false}

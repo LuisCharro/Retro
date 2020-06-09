@@ -26,10 +26,7 @@ extern "C"
 
 constexpr uint32_t kSCRWIDTH {640};
 constexpr uint32_t kSCRHEIGHT {360};
- 
-//uint32_t screen[kSCRWIDTH*kSCRHEIGHT];
-//uint32_t* screen= { nullptr };
-//constexpr uint32_t kWINDOWSIZE {kSCRWIDTH*kSCRHEIGHT};
+const int KS_ESCAPE = 0xFF1B; 
  
 struct Screen_t
 {
@@ -85,15 +82,15 @@ int main(int argc, char const *argv[])
                 [[maybe_unused]]auto& e = GOFact.CreateGhost(phy->x, phy->y);                
             }
         );
-        
-        // Main Loop
-        while (Render.Update(EntityMan))
+
+        while (!Input.IsKeyPressed(KS_ESCAPE))
         {
+            Render.Update(EntityMan);
             Input.Update(EntityMan);
             Physics.Update(EntityMan);
             Collision.Update(EntityMan);
             Spawn.Update(EntityMan);
-        }        
+        }
     }
     catch (const char* s)
     {
