@@ -6,6 +6,8 @@
 #include <game/cmp/render.hpp>
 #include <game/cmp/collider.hpp>
 
+#include <functional>
+
 template<typename GameCTX_t>    
 CollisionSystem_t<GameCTX_t>::CollisionSystem_t(uint32_t w, uint32_t h)
     : m_w(w), m_h(h)
@@ -18,7 +20,15 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 {
     auto& ColCmpVec {g.template GetComponents<ColliderComponent_t>()};
 
-    for (auto& c: ColCmpVec) c.boxRoot.collided = false;
+    //Using a type
+    std::function<void(BoundingBoxNode_t&)> falseCollideds = 
+        [&](BoundingBoxNode_t& b)
+        {
+            b.collided = false;
+            for (auto& c: b.childs) falseCollideds(c);
+        };
+
+    for (auto& c: ColCmpVec) falseCollideds(c.boxRoot);
 
     for (std::size_t i=0; i < ColCmpVec.size(); ++i) 
     {
@@ -36,7 +46,7 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 
             if (!p2) { continue; }
 
-            CheckObjectCollision(c1, c2, *p1, *p2);
+            CheckObjectCollision(c1.boxRoot, c2.boxRoot, *p1, *p2);
         }    
     }
 
@@ -46,14 +56,14 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 template<typename GameCTX_t>
 constexpr void  
 CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
-    ColliderComponent_t& c1, 
-    ColliderComponent_t& c2, 
+    BoundingBoxNode_t& bn1, 
+    BoundingBoxNode_t& bn2, 
     const PhysicsComponent_t& p1, 
     const PhysicsComponent_t& p2) const noexcept
 {
     // Move Boundng Boxes to screen coordinates
-    auto b1 = Move2ScreenCoords(c1.boxRoot.box, p1.x, p1.y);
-    auto b2 = Move2ScreenCoords(c2.boxRoot.box, p2.x, p2.y);
+    auto b1 = Move2ScreenCoords(bn1.box, p1.x, p1.y);
+    auto b2 = Move2ScreenCoords(bn1.box, p2.x, p2.y);
 
     // Check collisions in one generic axis
     auto checkIntervals = [](uint32_t L1,uint32_t R1,uint32_t L2,uint32_t R2)
@@ -72,16 +82,42 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
             checkIntervals(b1.yUp  , b1.yDown , b2.yUp  , b2.yDown )
         )
     {
-        //Collision
-        c1.boxRoot.collided = true;
-        c2.boxRoot.collided = true;
-        std::cout << "Collision" << std::endl; 
+        
 
-        std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
-        std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
+        // 4 cases
+        // 2 Leaft node
+        // BN1 has child nodes
+        // BN2 has child nodes
+        // BN1 and BN2 have child nodes
 
-        std::cout << "b1.yUp: " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
-        std::cout << "b2.yUp: " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
+        if (!bn1.childs.empty() )
+        {
+            for(auto& b: bn1.childs)
+            {
+                CheckObjectCollision(b, bn2, p1, p2);
+            } 
+        }
+        else if (!bn2.childs.empty() )
+        {
+            for(auto& b: bn2.childs)
+            {
+                CheckObjectCollision(bn1, b, p1, p2);
+            } 
+        }
+        else
+        {
+            //Collision
+            bn1.collided = true;
+            bn2.collided = true;
+
+            std::cout << "Collision" << std::endl; 
+
+            std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
+            std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
+
+            std::cout << "b1.yUp  : " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
+            std::cout << "b2.yUp  : " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
+        }
     }
 }
 
