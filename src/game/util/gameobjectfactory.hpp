@@ -8,6 +8,7 @@
 #include <game/cmp/physics.hpp>
 #include <game/cmp/render.hpp>
 #include <game/cmp/spawner.hpp>
+#include <game/cmp/health.hpp>
 
 #include <ecs/cmp/entity.hpp>
 #include "ecs/man/entitymanager.hpp"
@@ -59,6 +60,8 @@ struct GameObjectFactory_t
 
         rn.transparency = true;
         rn.LoadFromFile("assets/tomb.png");
+
+        cl.mask = 0; // Collide with nothing!
 
         cl.boxRoot.box.xLeft = 0;
         cl.boxRoot.box.xRight = rn.w;

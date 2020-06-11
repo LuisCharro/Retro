@@ -11,31 +11,29 @@
 #include <game/cmp/physics.hpp>
 #include <game/cmp/spawner.hpp>
 
-//namespace ECS {
-    template<typename GameCTX_t>
-    void 
-    SpawnSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
+template<typename GameCTX_t>
+void 
+SpawnSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
+{
+    //using clk = std::chrono::steady_clock;
+    //auto now = std::chrono::steady_clock::now();
+
+    using namespace std::chrono;
+    auto now = steady_clock::now();
+
+    for (auto& spw : g.template GetComponents<SpawnerComponent_t>()) 
     {
-        //using clk = std::chrono::steady_clock;
-        //auto now = std::chrono::steady_clock::now();
+        auto* phy = g.template GetRequiredComponent<PhysicsComponent_t>(spw);
 
-        using namespace std::chrono;
-        auto now = steady_clock::now();
+        if (!phy) continue;
 
-        for (auto& spw : g.template GetComponents<SpawnerComponent_t>()) 
+        auto passed {now - spw.last_spawn_time};
+        if (spw.to_be_spawned > 0 && passed > spw.spawn_interval)
         {
-            auto* phy = g.template GetRequiredComponent<PhysicsComponent_t>(spw);
+            spw.SpawnMethod(spw);
 
-            if (!phy) continue;
-
-            auto passed {now - spw.last_spawn_time};
-            if (spw.to_be_spawned > 0 && passed > spw.spawn_interval)
-            {
-                spw.SpawnMethod(spw);
-
-                spw.last_spawn_time = now;
-                --spw.to_be_spawned;
-            }
+            spw.last_spawn_time = now;
+            --spw.to_be_spawned;
         }
     }
-//}
+}

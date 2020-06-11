@@ -11,16 +11,16 @@ GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, u
     auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
     
     ph.x = x; ph.y = y;
-    ph.vx = ph.vy = 3; 
+    ph.vy = 3; 
 
     rn.SetDimensions(w,h);
 
     std::fill(begin(rn.sprite), end(rn.sprite),color);
 
-    cl.boxRoot.box.xLeft = 0;
-    cl.boxRoot.box.xRight = rn.w;
-    cl.boxRoot.box.yUp = rn.h;
-    cl.boxRoot.box.yDown = 0;
+    cl.boxRoot.box.xLeft  = 1;
+    cl.boxRoot.box.xRight = rn.w -1;
+    cl.boxRoot.box.yUp    = rn.h -1;
+    cl.boxRoot.box.yDown  = 1;
 
     return e;
 }
@@ -34,21 +34,21 @@ GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint
     auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
 
     ph.x = x; ph.y = y;
-    ph.vx = ph.vy = 3; 
+    ph.vy = 3; 
 
     rn.SetDimensions(w,h);
 
-    unsigned dataArraySize = w*h;//sizeof(sprite) / sizeof(int);
+    unsigned dataArraySize = w*h;
         
     rn.sprite.resize(dataArraySize);
 
     std::copy ( sprite, sprite+dataArraySize , rn.sprite.begin());
     //https://stackoverflow.com/questions/259297/how-do-you-copy-the-contents-of-an-array-to-a-stdvector-in-c-without-looping
 
-    cl.boxRoot.box.xLeft = 0;
-    cl.boxRoot.box.xRight = rn.w;
-    cl.boxRoot.box.yUp = rn.h;
-    cl.boxRoot.box.yDown = 0;
+    cl.boxRoot.box.xLeft  = 1;
+    cl.boxRoot.box.xRight = rn.w-1;
+    cl.boxRoot.box.yUp    = rn.h-1;
+    cl.boxRoot.box.yDown  = 1;
 
     return e;
 }
@@ -60,6 +60,7 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
     auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
+    m_EntityMan.AddComponent<HealthComponent_t>(e);
 
     rn.transparency = true;
 
@@ -72,7 +73,7 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
     cl.boxRoot.box.xRight = rn.w;
     cl.boxRoot.box.yUp = rn.h;
     cl.boxRoot.box.yDown = 0;
-
+    
     return e;
 }
 
@@ -112,11 +113,12 @@ GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
     auto* rn = e.getComponent<RenderComponent_t>();
     auto* ph = e.getComponent<PhysicsComponent_t>();    
 
-    c->boxRoot.box.xLeft  = 10;
-    c->boxRoot.box.xRight = rn->w-10;
-    c->boxRoot.box.yUp    = rn->h - 10;
-    c->boxRoot.box.yDown  = 10;
+    c->boxRoot.box.xLeft  = 5;
+    c->boxRoot.box.xRight = rn->w - 5;
+    c->boxRoot.box.yUp    = rn->h - 5;
+    c->boxRoot.box.yDown  = 5;
 
-    ph->vx = ph->vy = 3; 
+    ph->vx = 3;
+
     return e; 
 }

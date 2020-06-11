@@ -7,6 +7,7 @@ extern "C"
 #include <cstdint>
 #include <memory>
 #include <iostream>
+#include <thread>
 
 #include <game/cmp/collider.hpp>
 
@@ -16,6 +17,7 @@ extern "C"
 #include <game/sys/physics.tpp>
 #include <game/sys/collision.tpp>
 #include <game/sys/spawn.tpp>
+#include <game/sys/health.tpp>
 
 // Managers
 #include <ecs/man/entitymanager.hpp>
@@ -57,6 +59,7 @@ int main(int argc, char const *argv[])
         CollisionSystem_t<ECS::EntityManager_t> Collision{kSCRWIDTH,kSCRHEIGHT};
         InputSystem_t<ECS::EntityManager_t> Input;
         SpawnSystem_t<ECS::EntityManager_t> Spawn;
+        const HealthSystem_t<ECS::EntityManager_t> Health;
         Render.SetDebugDraw(true);
 
         // Entities
@@ -89,7 +92,9 @@ int main(int argc, char const *argv[])
             Input.Update(EntityMan);
             Physics.Update(EntityMan);
             Collision.Update(EntityMan);
+            Health.Update(EntityMan);
             Spawn.Update(EntityMan);
+            //std::this_thread::sleep_for(100ms);
         }
     }
     catch (const char* s)

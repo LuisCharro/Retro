@@ -15,6 +15,8 @@ struct ColliderComponent_t : public ECS::ComponentBase_t<ColliderComponent_t>
     {
     }
 
+    uint8_t mask { 0xFF };
+
     // Composite pattern
     BoundingBoxNode_t boxRoot {};
 };

@@ -2,11 +2,8 @@
 
 #include <ecs/util/typealiases.hpp>
 
-//namespace GAME {
-
 struct SpawnerComponent_t;
 struct PhysicsComponent_t;
-
 
 template<typename GameCTX_t>
 struct SpawnSystem_t
@@ -16,5 +13,3 @@ struct SpawnSystem_t
     void SpawnGhost(GameCTX_t& g, uint32_t x, uint32_t y) const;
     void Update(GameCTX_t& g) const;    
 };
-
-//}

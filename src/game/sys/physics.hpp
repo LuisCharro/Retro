@@ -3,8 +3,6 @@
 #include <cstdint>
 #include <ecs/util/typealiases.hpp>
 
-//namespace GAME {
-
 template<typename GameCTX_t>
 struct PhysicsSystem_t
 {
@@ -12,5 +10,3 @@ struct PhysicsSystem_t
 
     bool Update(GameCTX_t& g) const;        
 };
-
-//}

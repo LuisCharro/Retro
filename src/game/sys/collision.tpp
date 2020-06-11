@@ -42,6 +42,9 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
         for (std::size_t j=i+1; j < ColCmpVec.size(); ++j) 
         {
             auto& c2 {ColCmpVec[j]};
+
+            if ( (c1.mask & c2.mask) == 0) { continue; }
+
             auto* p2 = g.template GetRequiredComponent<PhysicsComponent_t>(c2);
 
             if (!p2) { continue; }
