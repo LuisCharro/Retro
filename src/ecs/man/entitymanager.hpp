@@ -34,6 +34,8 @@ struct EntityManager_t
       return m_Entity.emplace_back();
     }
 
+    void DestroyEntityByID(EntityID_t eid);
+
     template <typename CMP_t>
     Entity_t* GetEntityPointerFromComponent(const CMP_t& cmp)
     {

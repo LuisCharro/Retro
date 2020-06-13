@@ -16,6 +16,33 @@ namespace ECS
         //m_Entity.resize(10);
     }
 
+    void 
+    EntityManager_t::DestroyEntityByID(EntityID_t eid)
+    {
+        std::cout << "DestroyEntityByID: " << eid << std::endl;
+        auto* entity {GetEntityByID(eid)};
+
+        if (!entity) return;
+
+        std::cout << "Start to process all the components of the selected entity " << std::endl;
+
+        // for(auto it = (*entity).begin(); it != (*entity).end(); ++it)
+        //for(auto& [typeID, cmp]: *entity)
+        for(auto& [typeID, _]: *entity)
+        {
+            std::cout << "Component: " << typeID << "To Eliminate"<< std::endl;
+            m_components.DeleteComponentByTypeIDAndEntityID(typeID, eid);
+        }
+
+        //Copy paste change
+        auto it =
+        std::find_if(m_Entity.begin(),m_Entity.end(),
+            [&eid](const auto& e) {return e.getEntityID() == eid;}
+        );
+        
+        m_Entity.erase(it);
+    }
+
     //DNRY
     const Entity_t* 
     EntityManager_t::GetEntityByID(EntityID_t eid) const 

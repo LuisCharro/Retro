@@ -85,13 +85,22 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
             checkIntervals(b1.yUp  , b1.yDown , b2.yUp  , b2.yDown )
         )
     {
-        
-
         // 4 cases
         // 2 Leaft node
         // BN1 has child nodes
         // BN2 has child nodes
         // BN1 and BN2 have child nodes
+
+        //Collision
+        bn1.collided = true;
+        bn2.collided = true;
+
+        std::cout << "Collision" << std::endl; 
+
+        // std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
+        // std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
+        // std::cout << "b1.yUp  : " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
+        // std::cout << "b2.yUp  : " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
 
         if (!bn1.childs.empty() )
         {
@@ -106,21 +115,7 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
             {
                 CheckObjectCollision(bn1, b, p1, p2);
             } 
-        }
-        else
-        {
-            //Collision
-            bn1.collided = true;
-            bn2.collided = true;
-
-            std::cout << "Collision" << std::endl; 
-
-            std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
-            std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
-
-            std::cout << "b1.yUp  : " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
-            std::cout << "b2.yUp  : " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
-        }
+        }        
     }
 }
 

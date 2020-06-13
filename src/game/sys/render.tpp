@@ -306,8 +306,7 @@ RenderSystem_t<GameCTX_t>::DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32
 {
     if (boxNode.collided)
     {
-        std::cout << "if (boxNode.collided)" << std::endl;
-
+        //std::cout << "if (boxNode.collided)" << std::endl;
         RenderAlignedBoxClipped(boxNode.box, x, y, color);
     }   
     else

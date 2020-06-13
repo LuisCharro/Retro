@@ -9,6 +9,7 @@ GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, u
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
     auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
+    auto& hc  = m_EntityMan.AddComponent<HealthComponent_t>(e);
     
     ph.x = x; ph.y = y;
     ph.vy = 3; 
@@ -22,6 +23,8 @@ GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, u
     cl.boxRoot.box.yUp    = rn.h -1;
     cl.boxRoot.box.yDown  = 1;
 
+    hc.health = 1;
+
     return e;
 }
 
@@ -32,6 +35,7 @@ GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
     auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
+    auto& hc  = m_EntityMan.AddComponent<HealthComponent_t>(e);
 
     ph.x = x; ph.y = y;
     ph.vy = 3; 
@@ -50,6 +54,8 @@ GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint
     cl.boxRoot.box.yUp    = rn.h-1;
     cl.boxRoot.box.yDown  = 1;
 
+    hc.health = 1;
+
     return e;
 }
 
@@ -60,7 +66,7 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
     auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
-    m_EntityMan.AddComponent<HealthComponent_t>(e);
+    auto& h = m_EntityMan.AddComponent<HealthComponent_t>(e);
 
     rn.transparency = true;
 
@@ -73,6 +79,8 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
     cl.boxRoot.box.xRight = rn.w;
     cl.boxRoot.box.yUp = rn.h;
     cl.boxRoot.box.yDown = 0;
+
+    h.health = 1;
     
     return e;
 }
@@ -102,6 +110,10 @@ GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y) const
         };
     }
 
+    auto* h = e.getComponent<HealthComponent_t>();
+
+    h->health = 100;
+
     return e;
 }
 
@@ -119,6 +131,9 @@ GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
     c->boxRoot.box.yDown  = 5;
 
     ph->vx = 3;
+
+    auto* h = e.getComponent<HealthComponent_t>();
+    h->health = 50;
 
     return e; 
 }

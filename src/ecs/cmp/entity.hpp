@@ -12,63 +12,66 @@
 
 namespace ECS {
 
-struct Entity_t
-{
-    
-    // Indication to use the default constructor --> = default
-    explicit Entity_t() = default;
-
-    template<typename CMP_t>
-    void addComponent(CMP_t& cmp)
+    struct Entity_t
     {
-        auto type = cmp.getComponentTypeID();
-        m_components[type] = &cmp;
-    }
+        
+        // Indication to use the default constructor --> = default
+        explicit Entity_t() = default;
 
-    template<typename CMP_t>    
-    CMP_t* getComponent()
-    {
-        auto type = CMP_t::getComponentTypeID();
-        auto it = m_components.find(type);
-
-        if (it != m_components.end())
+        template<typename CMP_t>
+        void addComponent(CMP_t& cmp)
         {
-            return static_cast<CMP_t*>(it->second);
+            auto type = cmp.getComponentTypeID();
+            m_components[type] = &cmp;
         }
-        return nullptr;
-    }
 
-    template<typename CMP_t>
-    const CMP_t* getComponent() const
-    {
-        auto* cmp = const_cast<Entity_t*> (this)->getComponent<CMP_t>();
-        return const_cast<const CMP_t*>(cmp);
-    }
+        template<typename CMP_t>    
+        CMP_t* getComponent()
+        {
+            auto type = CMP_t::getComponentTypeID();
+            auto it = m_components.find(type);
 
-    constexpr EntityID_t getEntityID () const noexcept {return entiy_ID;}
+            if (it != m_components.end())
+            {
+                return static_cast<CMP_t*>(it->second);
+            }
+            return nullptr;
+        }
 
-    private:
+        template<typename CMP_t>
+        const CMP_t* getComponent() const
+        {
+            auto* cmp = const_cast<Entity_t*> (this)->getComponent<CMP_t>();
+            return const_cast<const CMP_t*>(cmp);
+        }
 
-    //Optional --> Nothing or an Object
-    //reference_Wrapper --> Object that contains a referece
-    //std::optional<std::reference_wrapper<PhysicsComponent_t>> phy;
+        constexpr EntityID_t getEntityID () const noexcept {return entiy_ID;}
 
-    // Initialy, we have the 3 pointers to the 3 components
-    // Now we use the m_components
+        auto begin() { return m_components.begin(); }
+        auto end()   { return m_components.end();   }
 
-    // PhysicsComponent_t* phy {nullptr};
-    // RenderComponent_t* ren {nullptr};
-    // InputComponent_t* inp {nullptr};
+        private:
 
-    //unordered_map<...>
-    Hast_t<ComponentTypeID_t, Component_t*> m_components;
+        //Optional --> Nothing or an Object
+        //reference_Wrapper --> Object that contains a referece
+        //std::optional<std::reference_wrapper<PhysicsComponent_t>> phy;
 
-    //std::size_t entiy_ID;
-    EntityID_t entiy_ID {++nextID};
+        // Initialy, we have the 3 pointers to the 3 components
+        // Now we use the m_components
 
-    // Declaration + Definition (inline)
-    inline static EntityID_t nextID{0};
-};
+        // PhysicsComponent_t* phy {nullptr};
+        // RenderComponent_t* ren {nullptr};
+        // InputComponent_t* inp {nullptr};
+
+        //unordered_map<...>
+        Hast_t<ComponentTypeID_t, Component_t*> m_components;
+
+        //std::size_t entiy_ID;
+        EntityID_t entiy_ID {++nextID};
+
+        // Declaration + Definition (inline)
+        inline static EntityID_t nextID{0};
+    };
 
 //Definition --> Outside of the .hpp or I will create several times
 // It goes to the cpp
