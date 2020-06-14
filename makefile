@@ -111,3 +111,5 @@ $(OBJSUBDIRS) :
 #-fsanitize=address -fno-ommit-frame-pointer
 
 # -f noexception compilacion final
+
+# git add src/ -f

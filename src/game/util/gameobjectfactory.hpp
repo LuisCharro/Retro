@@ -10,30 +10,30 @@
 #include <game/cmp/spawner.hpp>
 #include <game/cmp/health.hpp>
 
-#include <ecs/cmp/entity.hpp>
-#include "ecs/man/entitymanager.hpp"
+#include <ecs/man/entitymanager.tpp>
 
 //Forward declaration
-namespace ECS {
+namespace ECS 
+{
     struct EntityManager_t;
     struct Entity_t;
 }
 
-    constexpr uint32_t kR = 0x00FF0000;
-    constexpr uint32_t kG = 0x0000FF00;
-    constexpr uint32_t kB = 0x000000FF;
+constexpr uint32_t kR = 0x00FF0000;
+constexpr uint32_t kG = 0x0000FF00;
+constexpr uint32_t kB = 0x000000FF;
   
-    constexpr uint32_t sprite[8*8] =
-    {
-        kG,kG,kG,kG,kG,kG,kG,kG,
-        kG,kB,kR,kR,kR,kR,kB,kG,
-        kG,kB,kR,kG,kG,kG,kB,kG,
-        kG,kB,kR,kR,kG,kG,kB,kG,
-        kG,kB,kB,kR,kR,kG,kB,kG,
-        kG,kB,kB,kB,kB,kR,kB,kG,
-        kG,kB,kR,kR,kR,kR,kB,kG,
-        kG,kG,kG,kG,kG,kG,kG,kG,
-    };
+constexpr uint32_t sprite[8*8] =
+{
+    kG,kG,kG,kG,kG,kG,kG,kG,
+    kG,kB,kR,kR,kR,kR,kB,kG,
+    kG,kB,kR,kG,kG,kG,kB,kG,
+    kG,kB,kR,kR,kG,kG,kB,kG,
+    kG,kB,kB,kR,kR,kG,kB,kG,
+    kG,kB,kB,kB,kB,kR,kB,kG,
+    kG,kB,kR,kR,kR,kR,kB,kG,
+    kG,kG,kG,kG,kG,kG,kG,kG,
+};
 
 struct GameObjectFactory_t
 {

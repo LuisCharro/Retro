@@ -1,3 +1,5 @@
+#pragma once
+
 // Systems
 #include "collision.hpp"
 

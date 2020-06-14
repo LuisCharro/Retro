@@ -1,8 +1,6 @@
-
-//#include <util/gamecontext.hpp>
+#pragma once
 
 #include <iostream>
-
 
 // Systems
 #include "spawn.hpp"

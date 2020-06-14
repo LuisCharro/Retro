@@ -1,3 +1,4 @@
+#pragma once
 
 // Systems
 #include "health.hpp"

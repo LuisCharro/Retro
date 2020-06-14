@@ -20,7 +20,7 @@ extern "C"
 #include <game/sys/health.tpp>
 
 // Managers
-#include <ecs/man/entitymanager.hpp>
+#include <ecs/man/entitymanager.tpp>
 
 // Factory
 #include <game/util/gameobjectfactory.hpp>
