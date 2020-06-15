@@ -50,6 +50,16 @@ namespace ECS {
         auto begin() { return m_components.begin(); }
         auto end()   { return m_components.end();   }
 
+        void UpdateComponent(ComponentTypeID_t cid, Component_t* cmpptr)
+        {
+            auto it = m_components.find(cid);
+
+            if (it != m_components.end())
+            {
+                it->second = cmpptr;
+            }
+        }
+
         private:
 
         //Optional --> Nothing or an Object

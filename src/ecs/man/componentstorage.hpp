@@ -24,7 +24,7 @@ namespace ECS
         template<typename CMP_t>        Vec_t<CMP_t>&   GetComponents();
         template<typename CMP_t> const  Vec_t<CMP_t>&   GetComponents() const;
 
-        void DeleteComponentByTypeIDAndEntityID(ComponentTypeID_t cid, EntityID_t eid);
+        Component_t* DeleteComponentByTypeIDAndEntityID(ComponentTypeID_t cid, EntityID_t eid);
     
         private:
 

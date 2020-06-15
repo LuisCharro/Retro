@@ -26,26 +26,40 @@ namespace ECS
     EntityManager_t::DestroyEntityByID(EntityID_t eid)
     {
         std::cout << "DestroyEntityByID: " << eid << std::endl;
-        auto* entity {GetEntityByID(eid)};
+        auto* entity { GetEntityByID(eid) };
 
         if (!entity) return;
 
         std::cout << "Start to process all the components of the selected entity " << std::endl;
 
+        // For each component inside an Entity
         // for(auto it = (*entity).begin(); it != (*entity).end(); ++it)
-        //for(auto& [typeID, cmp]: *entity)
+        // for(auto& [typeID, cmp]: *entity)
         for(auto& [typeID, _]: *entity)
         {
             std::cout << "Component: " << typeID << "To Eliminate"<< std::endl;
-            m_components.DeleteComponentByTypeIDAndEntityID(typeID, eid);
+            auto* cmpptr = m_components.DeleteComponentByTypeIDAndEntityID(typeID, eid);
+
+            if (!cmpptr) continue;
+
+            auto* moveEntity { GetEntityByID( cmpptr->GetEntityID() ) };
+            moveEntity->UpdateComponent(typeID, cmpptr);
         }
 
-        //Copy paste change
+        //Copy paste from other method --> Change
         auto it =
         std::find_if(m_Entity.begin(),m_Entity.end(),
             [&eid](const auto& e) {return e.getEntityID() == eid;}
         );
-        
+
+        // By the moment --> I am deleting an Entity anywhere in the vector
+        // Then, the vector will copy 1 by 1 each component until the end
+        // The content of the entites are copiable by default copy
+        // In the future --> I can do the same as the components
+        // Copy the last of the vector to a temp
+        // Move the entity that I want to delete to the end
+        // Put the temp entity where it was the one that I want to delete
+
         m_Entity.erase(it);
     }
 

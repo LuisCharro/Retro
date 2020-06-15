@@ -89,13 +89,17 @@ namespace ECS {
         return *comvec;
     }
 
-    inline void componentStorage_t::DeleteComponentByTypeIDAndEntityID(ComponentTypeID_t cid, EntityID_t eid)
+    inline Component_t* componentStorage_t::DeleteComponentByTypeIDAndEntityID(ComponentTypeID_t cid, EntityID_t eid)
     {
+        // First we look for the vector of the indicated type cid
         auto it = m_ComponentVectors.find(cid);
-        if (it == m_ComponentVectors.end()) return;
+        if (it == m_ComponentVectors.end()) return nullptr;
 
+        //  Hast_t<ComponentID_t, UPtr<ComponentVectorBase_t>> m_ComponentVectors; --> Second
         auto vecBase { it->second.get()};
 
-        vecBase->DeleteComponentByEntityId(eid);
+        auto* cmpptr = vecBase->DeleteComponentByEntityId(eid);
+
+        return cmpptr;
     }
 }
