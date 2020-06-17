@@ -145,5 +145,17 @@ CollisionSystem_t<GameCTX_t>::CheckBoundaryCollisions(const ColliderComponent_t&
 
     // Collisions
     if ( b.xLeft > m_w || b.xRight > m_w) { p.x -= p.vx; p.vx = -p.vx; }
-    if ( b.yUp   > m_h || b.yDown  > m_h) { p.y -= p.vy; p.vy = -p.vy; }
+    if ( b.yUp   > m_h || b.yDown  > m_h) 
+    {
+        p.y -= p.vy;
+
+        if (p.gravity)
+        {
+            p.vy = 0; 
+        }
+        else
+        {
+            p.vy = -p.vy; 
+        }        
+    }
 }

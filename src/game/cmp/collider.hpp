@@ -15,7 +15,15 @@ struct ColliderComponent_t : public ECS::ComponentBase_t<ColliderComponent_t>
     {
     }
 
-    uint8_t mask { 0xFF };
+    enum {
+            L_NoLayer   = 0x00
+        ,   L_Blades    = 0x01
+        ,   L_Platforms = 0x02
+        ,   L_All       = 0xFF
+    };
+
+    //
+    uint8_t mask { L_All };
 
     // Composite pattern
     BoundingBoxNode_t boxRoot {};

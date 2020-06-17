@@ -46,7 +46,9 @@ struct GameObjectFactory_t
     ECS::Entity_t& CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color) const;
     ECS::Entity_t& CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint32_t sprite[]) const;    
     ECS::Entity_t& CreatePlayer(uint32_t x, uint32_t y) const;
-    ECS::Entity_t& CreateGhost(uint32_t x, uint32_t y) const;    
+    ECS::Entity_t& CreateGhost(uint32_t x, uint32_t y) const;
+
+    ECS::Entity_t& CreatePlatform(uint32_t x, uint32_t y) const;
 
     template <typename CALLABLE_t>
     ECS::Entity_t& 
@@ -61,7 +63,7 @@ struct GameObjectFactory_t
         rn.transparency = true;
         rn.LoadFromFile("assets/tomb.png");
 
-        cl.mask = 0; // Collide with nothing!
+        cl.mask = ColliderComponent_t::L_NoLayer;
 
         cl.boxRoot.box.xLeft = 0;
         cl.boxRoot.box.xRight = rn.w;
@@ -70,6 +72,7 @@ struct GameObjectFactory_t
 
         phy.x = x; phy.y = y;
         phy.vy = 1;
+        phy.gravity = 0;
 
         // Adding a delegate by Lambda expresion
         // We need to pass x and y as value (not by reference) because:

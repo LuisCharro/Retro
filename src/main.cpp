@@ -28,7 +28,10 @@ extern "C"
 
 constexpr uint32_t kSCRWIDTH {640};
 constexpr uint32_t kSCRHEIGHT {360};
-const int KS_ESCAPE = 0xFF1B; 
+const int KS_ESCAPE = 0xFF1B;
+
+constexpr auto FPS { 60 };
+constexpr auto MSPF { 1000ms/FPS };
  
 struct Screen_t
 {
@@ -67,10 +70,22 @@ int main(int argc, char const *argv[])
 
         GameObjectFactory_t GOFact {EntityMan};
 
+        // Platforms
+        GOFact.CreatePlatform(250,270);
+
+        GOFact.CreatePlatform(100,343);
+        GOFact.CreatePlatform(201,343);
+        GOFact.CreatePlatform(301,343);
+        GOFact.CreatePlatform(401,343);
+
+        // Player
+        GOFact.CreatePlayer(100,266);
+        
+        // Demo entities
         GOFact.CreateRectangleEntity(10,10,16,16, 0x00FFFFFF);
         GOFact.CreateSpriteEntity(100,50,8,8, sprite);
-
-        GOFact.CreatePlayer(200,100);
+        
+        // Enemies
         GOFact.CreateGhost(300,100);
 
         GOFact.CreateSpawner(200,1,
@@ -84,7 +99,10 @@ int main(int argc, char const *argv[])
 
                 [[maybe_unused]]auto& e = GOFact.CreateGhost(phy->x, phy->y);                
             }
-        );
+        );       
+
+        using clk = std::chrono::steady_clock;
+        auto lastTime = clk::now();
 
         while (!Input.IsKeyPressed(KS_ESCAPE))
         {
@@ -94,7 +112,13 @@ int main(int argc, char const *argv[])
             Collision.Update(EntityMan);
             Health.Update(EntityMan);
             Spawn.Update(EntityMan);
-            //std::this_thread::sleep_for(100ms);
+
+            auto interval = clk::now()-lastTime;
+
+            if (interval < MSPF)
+                std::this_thread::sleep_for(MSPF - interval);
+
+            lastTime = clk::now();
         }
     }
     catch (const char* s)

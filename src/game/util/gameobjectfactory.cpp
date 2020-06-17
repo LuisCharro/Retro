@@ -123,7 +123,8 @@ GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
     auto& e  = CreateEntity(x, y, "assets/fantasma.png");
     auto* c = e.getComponent<ColliderComponent_t>();
     auto* rn = e.getComponent<RenderComponent_t>();
-    auto* ph = e.getComponent<PhysicsComponent_t>();    
+    auto* ph = e.getComponent<PhysicsComponent_t>();
+    auto* h = e.getComponent<HealthComponent_t>();
 
     c->boxRoot.box.xLeft  = 5;
     c->boxRoot.box.xRight = rn->w - 5;
@@ -131,9 +132,37 @@ GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
     c->boxRoot.box.yDown  = 5;
 
     ph->vx = 3;
-
-    auto* h = e.getComponent<HealthComponent_t>();
+    ph->gravity = 0;
+    
     h->health = 50;
+
+    c->mask = ColliderComponent_t::L_Blades;
+
+    return e; 
+}
+
+ECS::Entity_t& 
+GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
+{
+    auto& e  = m_EntityMan.CreateEntity();
+    auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
+    auto& ph = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
+    auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);    
+
+    rn.transparency = true;
+
+    rn.LoadFromFile("assets/platform.png");
+
+    ph.x = x; ph.y = y;
+    ph.vx = ph.vy = 0;
+    ph.gravity = 0;
+
+    cl.mask = ColliderComponent_t::L_Platforms;
+
+    cl.boxRoot.box.xLeft = 0;
+    cl.boxRoot.box.xRight = rn.w;
+    cl.boxRoot.box.yUp = rn.h;
+    cl.boxRoot.box.yDown = 0;
 
     return e; 
 }
