@@ -79,11 +79,11 @@ int main(int argc, char const *argv[])
         GOFact.CreatePlatform(401,343);
 
         // Player
-        GOFact.CreatePlayer(100,266);
+        GOFact.CreatePlayer(1,1);
         
         // Demo entities
-        GOFact.CreateRectangleEntity(10,10,16,16, 0x00FFFFFF);
-        GOFact.CreateSpriteEntity(100,50,8,8, sprite);
+        GOFact.CreateRectangleEntity(610,10,16,16, 0x00FFFFFF);
+        GOFact.CreateSpriteEntity(630,50,8,8, sprite);
         
         // Enemies
         GOFact.CreateGhost(300,100);

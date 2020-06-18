@@ -65,16 +65,17 @@ InputSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
             {
                 phy->vx = 0;                
 
-                if (m_Keyboard.IsKeyPressed(inp.Key_LEFT))  { phy->vx = -5;}
+                if (m_Keyboard.IsKeyPressed(inp.Key_LEFT))  { phy->vx = -5; }
                 if (m_Keyboard.IsKeyPressed(inp.Key_RIGHT)) { phy->vx =  5; }
                 if (m_Keyboard.IsKeyPressed(inp.Key_UP))    
                 {
-                    if (phy->jumpIdx == phy->jumpTable.size())
+                    if (    phy->jumpIdx    == phy->jumpTable.size()
+                        &&  phy->timesVyIs0 == phy->KTimesVyIs0ToJump  )
                     {
                         phy->jumpIdx = 0;
                     }                    
                 }
-                
+
                 // No longer needed once we have gravity
                 //if (m_Keyboard.IsKeyPressed(inp.Key_DOWN))  { phy->vy =  5; }
             }
