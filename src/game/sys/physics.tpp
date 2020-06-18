@@ -18,7 +18,7 @@ PhysicsSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
         if (phy.vy == 0)            
         {
             constexpr uint8_t z { 0 };
-            phy.timesVyIs0 = std::clamp(phy.timesVyIs0, z, phy.KTimesVyIs0ToJump);            
+            phy.timesVyIs0 = std::clamp(++phy.timesVyIs0, z, phy.KTimesVyIs0ToJump);            
         }
         else
         {
