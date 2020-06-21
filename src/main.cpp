@@ -71,19 +71,20 @@ int main(int argc, char const *argv[])
         GameObjectFactory_t GOFact {EntityMan};
 
         // Platforms
-        GOFact.CreatePlatform(300,270);
+        
+        GOFact.CreatePlatform(200,343);
+        GOFact.CreatePlatform(301,343);
+        GOFact.CreatePlatform(402,343);
 
-        GOFact.CreatePlatform(100,343);
-        GOFact.CreatePlatform(201,343);
-        GOFact.CreatePlatform(302,343);
-        GOFact.CreatePlatform(403,343);
+        GOFact.CreatePlatform(300,292);
+        GOFact.CreatePlatform(421,250);
 
         // Player
         GOFact.CreatePlayer(1,1);
         
         // Demo entities
-        GOFact.CreateRectangleEntity(610,10,16,16, 0x00FFFFFF);
-        GOFact.CreateSpriteEntity(630,50,8,8, sprite);
+        //GOFact.CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
+        //GOFact.CreateSpriteEntity(600,50,8,8, sprite);
         
         // Enemies
         GOFact.CreateGhost(240,100);

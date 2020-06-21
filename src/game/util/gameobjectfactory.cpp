@@ -12,7 +12,7 @@ GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, u
     auto& hc  = m_EntityMan.AddComponent<HealthComponent_t>(e);
     
     ph.x = x; ph.y = y;
-    ph.vy = 3; 
+    ph.vy = 3; ph.vx = 3; 
 
     rn.SetDimensions(w,h);
 
@@ -41,7 +41,7 @@ GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint
     auto& hc  = m_EntityMan.AddComponent<HealthComponent_t>(e);
 
     ph.x = x; ph.y = y;
-    ph.vy = 3; 
+    ph.vy = 3; ph.vx = 3; 
 
     rn.SetDimensions(w,h);
 
@@ -75,7 +75,6 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
     auto& h = m_EntityMan.AddComponent<HealthComponent_t>(e);
 
     rn.transparency = true;
-
     rn.LoadFromFile(filename);
 
     ph.x = x; ph.y = y;
@@ -163,15 +162,15 @@ GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
     ph.x = x; ph.y = y;    
     ph.gravity = 0;
 
+    rn.transparency = true;
+    rn.LoadFromFile("assets/platform.png");
+
     cl.mask = ColliderComponent_t::L_Platforms;    
     cl.properties = ColliderComponent_t::P_IsSolid;
     cl.boxRoot.box.xLeft  = 0;
     cl.boxRoot.box.xRight = rn.w;
     cl.boxRoot.box.yUp    = 0;    
     cl.boxRoot.box.yDown  = rn.h;
-
-    rn.transparency = true;
-    rn.LoadFromFile("assets/platform.png");    
 
     return e; 
 }

@@ -147,6 +147,71 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
 
 template<typename GameCTX_t>
 constexpr void  
+CollisionSystem_t<GameCTX_t>::InflictDamage(GameCTX_t& g, ColliderComponent_t& inflicted, ColliderComponent_t& receiver) const noexcept
+{
+    std::cout << "ReactToCollision with P_Damages " << std::endl; 
+
+    auto* recevHealth = g.template GetRequiredComponent<HealthComponent_t>(receiver);
+    auto* inflHealth = g.template GetRequiredComponent<HealthComponent_t>(inflicted);
+
+    if (!recevHealth || !inflHealth) { return; }
+
+    recevHealth->damage += inflHealth->damageInflicted;
+    inflHealth->damage += inflHealth->selfDamageOnInfliction; 
+}
+
+template<typename GameCTX_t>
+constexpr void  
+CollisionSystem_t<GameCTX_t>::UndoCollision(GameCTX_t& g, ColliderComponent_t& solid, ColliderComponent_t& mobile) const noexcept
+{
+    auto* phySolid = g.template GetRequiredComponent<PhysicsComponent_t>(solid);
+    auto* phymobile = g.template GetRequiredComponent<PhysicsComponent_t>(mobile);
+
+    if (!phySolid || !phymobile) return;
+
+    auto solidBox = Move2ScreenCoords(solid.boxRoot.box, phySolid->x, phySolid->y);
+    auto mobileBox = Move2ScreenCoords(mobile.boxRoot.box, phymobile->x, phymobile->y);
+
+    //           |----|     Right
+    // |----|               Left
+    // |--------------|     Center
+    //      |----|          Center
+    //   |----------|
+
+    // Calculate intersection
+    // Trailing Return Type
+    auto intervalIntersection =[](uint32_t Ml, uint32_t Mr, uint32_t Sl, uint32_t Sr) -> int32_t
+    {
+        // Left
+        if (Ml < Sl)
+        {
+            if (Mr < Sr)   { return Sl - Mr; }        
+        }
+        // Right
+        else if (Mr > Sr)  { return Sr - Ml; }
+                             return 0;
+    };
+
+    struct { int32_t x, y; } overlap {
+            intervalIntersection(mobileBox.xLeft, mobileBox.xRight, solidBox.xLeft, solidBox.xRight)
+        ,   intervalIntersection(mobileBox.yUp,   mobileBox.yDown,  solidBox.yUp,   solidBox.yDown)
+    };
+
+    // Stopping the collision
+    if (overlap.x == 0 || (overlap.y != 0 && std::abs(overlap.y) <= std::abs(overlap.x) ))
+    {
+        phymobile->y += overlap.y;
+        phymobile->vy = 0;
+    }
+    else
+    {
+        phymobile->x += overlap.x;
+        phymobile->vx = 0;
+    }
+}
+
+template<typename GameCTX_t>
+constexpr void  
 CollisionSystem_t<GameCTX_t>::ReactToCollision(GameCTX_t& g, ColliderComponent_t& c1, ColliderComponent_t& c2) const noexcept
 {
     using CP = ColliderComponent_t;
@@ -167,19 +232,11 @@ CollisionSystem_t<GameCTX_t>::ReactToCollision(GameCTX_t& g, ColliderComponent_t
 
     if (other->properties & CP::P_Damages)
     {
-        std::cout << "ReactToCollision with P_Damages " << std::endl; 
-
-        auto* plH = g.template GetRequiredComponent<HealthComponent_t>(*player);
-        auto* poH = g.template GetRequiredComponent<HealthComponent_t>(*other);
-
-        if (!plH || !poH) { return; }
-
-        plH->damage += poH->damageInflicted;
-        poH->damage += poH->selfDamageOnInfliction; 
+        InflictDamage(g,*other,*player);
     }
     else if (other->properties & CP::P_IsSolid )
     {
-         std::cout << "ReactToCollision with P_IsSolid " << std::endl; 
+        UndoCollision(g,*other,*player);
     }
 }
 
