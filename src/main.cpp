@@ -71,12 +71,12 @@ int main(int argc, char const *argv[])
         GameObjectFactory_t GOFact {EntityMan};
 
         // Platforms
-        GOFact.CreatePlatform(250,270);
+        GOFact.CreatePlatform(300,270);
 
         GOFact.CreatePlatform(100,343);
         GOFact.CreatePlatform(201,343);
-        GOFact.CreatePlatform(301,343);
-        GOFact.CreatePlatform(401,343);
+        GOFact.CreatePlatform(302,343);
+        GOFact.CreatePlatform(403,343);
 
         // Player
         GOFact.CreatePlayer(1,1);
@@ -86,8 +86,8 @@ int main(int argc, char const *argv[])
         GOFact.CreateSpriteEntity(630,50,8,8, sprite);
         
         // Enemies
-        GOFact.CreateGhost(300,100);
-
+        GOFact.CreateGhost(240,100);
+        
         GOFact.CreateSpawner(200,1,
             // Adding as parameter a Lambda with "a function as parameter" 
             [&](const SpawnerComponent_t& spw)
@@ -99,7 +99,7 @@ int main(int argc, char const *argv[])
 
                 [[maybe_unused]]auto& e = GOFact.CreateGhost(phy->x, phy->y);                
             }
-        );       
+        );
 
         using clk = std::chrono::steady_clock;
         auto lastTime = clk::now();

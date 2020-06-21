@@ -5,10 +5,11 @@
 
 // Components
 #include <game/cmp/physics.hpp>
-#include <game/cmp/render.hpp>
 #include <game/cmp/collider.hpp>
+#include <game/cmp/health.hpp>
 
 #include <functional>
+//#include <bitset>
 
 template<typename GameCTX_t>    
 CollisionSystem_t<GameCTX_t>::CollisionSystem_t(uint32_t w, uint32_t h)
@@ -22,7 +23,7 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 {
     auto& ColCmpVec {g.template GetComponents<ColliderComponent_t>()};
 
-    //Using a type
+    //Clean previous collisions (Using a type)
     std::function<void(BoundingBoxNode_t&)> falseCollideds = 
         [&](BoundingBoxNode_t& b)
         {
@@ -51,7 +52,10 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 
             if (!p2) { continue; }
 
-            CheckObjectCollision(c1.boxRoot, c2.boxRoot, *p1, *p2);
+            if (CheckObjectCollision(c1.boxRoot, c2.boxRoot, *p1, *p2))
+            {
+                ReactToCollision(g, c1, c2);
+            }
         }    
     }
 
@@ -59,7 +63,7 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 }
 
 template<typename GameCTX_t>
-constexpr void  
+constexpr bool  
 CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
     BoundingBoxNode_t& bn1, 
     BoundingBoxNode_t& bn2, 
@@ -68,13 +72,14 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
 {
     // Move Boundng Boxes to screen coordinates
     auto b1 = Move2ScreenCoords(bn1.box, p1.x, p1.y);
-    auto b2 = Move2ScreenCoords(bn1.box, p2.x, p2.y);
+    auto b2 = Move2ScreenCoords(bn2.box, p2.x, p2.y);
 
     // Check collisions in one generic axis
     auto checkIntervals = [](uint32_t L1,uint32_t R1,uint32_t L2,uint32_t R2)
     {
-        // I1   L1--------R1                            L1--------R1
-        // I2                 L2--------R2 L2--------R2
+        // 2 Possibilities 
+        // I1   L1--------R1               |              L1--------R1
+        // I2                 L2--------R2 | L2--------R2
         if (L2 > R1) return false;
         if (L1 > R2) return false;
         return true;
@@ -95,29 +100,86 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
 
         //Collision
         bn1.collided = true;
-        bn2.collided = true;
-
-        std::cout << "Collision" << std::endl; 
-
-        // std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
-        // std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
-        // std::cout << "b1.yUp  : " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
-        // std::cout << "b2.yUp  : " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
+        bn2.collided = true;       
 
         if (!bn1.childs.empty() )
         {
             for(auto& b: bn1.childs)
             {
-                CheckObjectCollision(b, bn2, p1, p2);
+                if (CheckObjectCollision(b, bn2, p1, p2))
+                {
+                    // std::cout << "Collision" << std::endl;
+                    // std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
+                    // std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
+                    // std::cout << "b1.yUp  : " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
+                    // std::cout << "b2.yUp  : " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
+                    return true;                   
+                }
             } 
         }
         else if (!bn2.childs.empty() )
         {
             for(auto& b: bn2.childs)
             {
-                CheckObjectCollision(bn1, b, p1, p2);
+                if (CheckObjectCollision(bn1, b, p1, p2))
+                {
+                    // std::cout << "Collision" << std::endl; 
+                    // std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
+                    // std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
+                    // std::cout << "b1.yUp  : " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
+                    // std::cout << "b2.yUp  : " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
+                    return true;                    
+                }
             } 
-        }        
+        }
+        else // Collision of 2 leaft colliders
+        {
+            // std::cout << "Collision" << std::endl; 
+            // std::cout << "b1.xLeft: " << b1.xLeft << " b1.xRight: " << b1.xRight << std::endl; 
+            // std::cout << "b2.xLeft: " << b2.xLeft << " b2.xRight: " << b2.xRight << std::endl; 
+            // std::cout << "b1.yUp  : " << b1.yUp << " b1.yDown: " << b1.yDown << std::endl; 
+            // std::cout << "b2.yUp  : " << b2.yUp << " b2.yDown: " << b2.yDown << std::endl; 
+            return true;
+        }    
+    }
+    return false; 
+}
+
+template<typename GameCTX_t>
+constexpr void  
+CollisionSystem_t<GameCTX_t>::ReactToCollision(GameCTX_t& g, ColliderComponent_t& c1, ColliderComponent_t& c2) const noexcept
+{
+    using CP = ColliderComponent_t;
+    CP *player {&c1}, *other {&c2};
+
+    if (c2.properties & CP::P_IsPlayer )
+    {
+        std::swap(player,other);
+    }
+    else if ( !(c1.properties & CP::P_IsPlayer) )  // Now only interesting in collisions to the player
+    {
+        std::cout << "ReactToCollision No player in collision " << std::endl; 
+        return;
+    }
+
+    // std::bitset<8> x(other->properties);    
+    // std::cout << "other->properties: " << x << std::endl; 
+
+    if (other->properties & CP::P_Damages)
+    {
+        std::cout << "ReactToCollision with P_Damages " << std::endl; 
+
+        auto* plH = g.template GetRequiredComponent<HealthComponent_t>(*player);
+        auto* poH = g.template GetRequiredComponent<HealthComponent_t>(*other);
+
+        if (!plH || !poH) { return; }
+
+        plH->damage += poH->damageInflicted;
+        poH->damage += poH->selfDamageOnInfliction; 
+    }
+    else if (other->properties & CP::P_IsSolid )
+    {
+         std::cout << "ReactToCollision with P_IsSolid " << std::endl; 
     }
 }
 

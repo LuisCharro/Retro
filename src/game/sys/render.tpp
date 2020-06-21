@@ -98,6 +98,7 @@ RenderSystem_t<GameCTX_t>::RenderSpriteClipped(const RenderComponent_t& ren, con
     uint32_t y { phy.y };
     uint32_t w { ren.w };
     uint32_t h { ren.h };
+
     bool transparency {ren.transparency};
 
     // Horizontal clipping rules
@@ -164,14 +165,6 @@ RenderSystem_t<GameCTX_t>::RenderInScreenBox (uint32_t* screen, const BoundingBo
 {
     const uint32_t width { box.xRight - box.xLeft };
     uint32_t height { box.yDown - box.yUp };
-
-    //4294966462
-    //4000000000
-    if (height >= 4000000000)
-    {
-        std::cout << "Break RenderInScreenBox" << std::endl; 
-        return;
-    }
 
     while (height--)
     {
@@ -253,8 +246,6 @@ template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept
 {
-    //std::cout << "RenderAlignedBoxClipped" << std::endl; 
-
     //Crop function
     auto crop = [](uint32_t &val, uint32_t max, uint32_t inf)
     {
@@ -289,8 +280,6 @@ template<typename GameCTX_t>
 constexpr void 
 RenderSystem_t<GameCTX_t>::DrawBox (const BoundingBox_t& box, uint32_t x, uint32_t y, uint32_t color) const noexcept
 {
-    //std::cout << "DrawBox" << std::endl;
-
     uint32_t x1 { x + box.xLeft };
     uint32_t x2 { x + box.xRight };
     uint32_t y1 { y + box.yUp };
@@ -307,7 +296,6 @@ RenderSystem_t<GameCTX_t>::DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32
 {
     if (boxNode.collided)
     {
-        //std::cout << "if (boxNode.collided)" << std::endl;
         RenderAlignedBoxClipped(boxNode.box, x, y, color);
     }   
     else

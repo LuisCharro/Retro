@@ -18,10 +18,13 @@ GameObjectFactory_t::CreateRectangleEntity(uint32_t x, uint32_t y, uint32_t w, u
 
     std::fill(begin(rn.sprite), end(rn.sprite),color);
 
-    cl.boxRoot.box.xLeft  = 1;
-    cl.boxRoot.box.xRight = rn.w -1;
-    cl.boxRoot.box.yUp    = rn.h -1;
-    cl.boxRoot.box.yDown  = 1;
+    cl.boxRoot.box.xLeft  = 0;
+    cl.boxRoot.box.xRight = rn.w;
+    cl.boxRoot.box.yUp    = 0;
+    cl.boxRoot.box.yDown  = rn.h;
+
+    cl.mask = ColliderComponent_t::L_Platforms;    
+    cl.properties = ColliderComponent_t::P_IsSolid;
 
     hc.health = 1;
 
@@ -49,10 +52,13 @@ GameObjectFactory_t::CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint
     std::copy ( sprite, sprite+dataArraySize , rn.sprite.begin());
     //https://stackoverflow.com/questions/259297/how-do-you-copy-the-contents-of-an-array-to-a-stdvector-in-c-without-looping
 
-    cl.boxRoot.box.xLeft  = 1;
-    cl.boxRoot.box.xRight = rn.w-1;
-    cl.boxRoot.box.yUp    = rn.h-1;
-    cl.boxRoot.box.yDown  = 1;
+    cl.boxRoot.box.xLeft  = 0;
+    cl.boxRoot.box.xRight = rn.w;
+    cl.boxRoot.box.yUp    = 0;
+    cl.boxRoot.box.yDown  = rn.h;
+
+    cl.mask = ColliderComponent_t::L_Platforms;    
+    cl.properties = ColliderComponent_t::P_IsSolid;
 
     hc.health = 1;
 
@@ -77,8 +83,8 @@ GameObjectFactory_t::CreateEntity(uint32_t x, uint32_t y, const std::string_view
 
     cl.boxRoot.box.xLeft = 0;
     cl.boxRoot.box.xRight = rn.w;
-    cl.boxRoot.box.yUp = rn.h;
-    cl.boxRoot.box.yDown = 0;
+    cl.boxRoot.box.yUp = 0;
+    cl.boxRoot.box.yDown = rn.h;
 
     h.health = 1;
     
@@ -96,6 +102,7 @@ GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y) const
     
     if (c)
     {
+        c->properties = ColliderComponent_t::P_IsPlayer;
         c->boxRoot.box= {3,37,4,72};
         c->boxRoot.childs =  {
                 { { 4, 36, 5, 33}, false,
@@ -112,7 +119,7 @@ GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y) const
 
     auto* h = e.getComponent<HealthComponent_t>();
 
-    h->health = 100;
+    h->health = 20;
 
     return e;
 }
@@ -126,18 +133,22 @@ GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
     auto* ph = e.getComponent<PhysicsComponent_t>();
     auto* h = e.getComponent<HealthComponent_t>();
 
+    c->mask = ColliderComponent_t::L_Blades;
+    c->properties = ColliderComponent_t::P_Damages;
+
     c->boxRoot.box.xLeft  = 5;
     c->boxRoot.box.xRight = rn->w - 5;
-    c->boxRoot.box.yUp    = rn->h - 5;
-    c->boxRoot.box.yDown  = 5;
+    c->boxRoot.box.yUp    = 5;
+    c->boxRoot.box.yDown  = rn->h - 5;
 
     ph->vx = 3;
+    ph->vy = 3;
     ph->gravity = 0;
     
-    h->health = 50;
-
-    c->mask = ColliderComponent_t::L_Blades;
-
+    h->health = 1;
+    h->damageInflicted = 1;
+    h->selfDamageOnInfliction = 1;
+    
     return e; 
 }
 
@@ -147,22 +158,20 @@ GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
     auto& e  = m_EntityMan.CreateEntity();
     auto& rn = m_EntityMan.AddComponent<RenderComponent_t>(e);
     auto& ph = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
-    auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);    
+    auto& cl = m_EntityMan.AddComponent<ColliderComponent_t>(e);
 
-    rn.transparency = true;
-
-    rn.LoadFromFile("assets/platform.png");
-
-    ph.x = x; ph.y = y;
-    ph.vx = ph.vy = 0;
+    ph.x = x; ph.y = y;    
     ph.gravity = 0;
 
-    cl.mask = ColliderComponent_t::L_Platforms;
-
-    cl.boxRoot.box.xLeft = 0;
+    cl.mask = ColliderComponent_t::L_Platforms;    
+    cl.properties = ColliderComponent_t::P_IsSolid;
+    cl.boxRoot.box.xLeft  = 0;
     cl.boxRoot.box.xRight = rn.w;
-    cl.boxRoot.box.yUp = rn.h;
-    cl.boxRoot.box.yDown = 0;
+    cl.boxRoot.box.yUp    = 0;    
+    cl.boxRoot.box.yDown  = rn.h;
+
+    rn.transparency = true;
+    rn.LoadFromFile("assets/platform.png");    
 
     return e; 
 }

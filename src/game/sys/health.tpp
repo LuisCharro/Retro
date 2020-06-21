@@ -14,6 +14,28 @@ HealthSystem_t<GameCTX_t>::Update(GameCTX_t& g) const noexcept
 {
     for (auto& h : g.template GetComponents<HealthComponent_t>()) 
     {
+        if (h.damage > 0)
+        {
+            std::cout <<  "------->Entity: " << h.GetEntityID() << " has damage: " << h.damage << std::endl;
+
+            if (h.damage < h.health) 
+            {
+                h.health -= h.damage;
+                std::cout <<  "------->Entity: " << h.GetEntityID() << " life: " << h.health << std::endl;
+            }
+            else 
+            {
+                h.health = 0;
+                std::cout <<  "------->Entity: " << h.GetEntityID() << " is dead" << std::endl;
+                g.DestroyEntityByID(h.GetEntityID());
+            }            
+
+            h.damage = 0;
+        }
+
+        //No longer needed --> We check with damage
+
+        /*
         const auto* c { g.template GetRequiredComponent<ColliderComponent_t>(h)};
 
         if (c == nullptr) continue;
@@ -30,6 +52,7 @@ HealthSystem_t<GameCTX_t>::Update(GameCTX_t& g) const noexcept
                 std::cout <<  "------->Entity: " << h.GetEntityID() << " life: " << h.health << std::endl;
             }            
         }
+        */
     }
 }
 

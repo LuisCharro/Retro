@@ -77,7 +77,9 @@ struct GameObjectFactory_t
         // Adding a delegate by Lambda expresion
         // We need to pass x and y as value (not by reference) because:
         //  - When the SpawnMethod is called the variables x and y does not exist (scope of variables)
-        spw.SpawnMethod = callback;       
+        spw.SpawnMethod = callback;
+
+        spw.to_be_spawned = 5;
        
         return e;
     }

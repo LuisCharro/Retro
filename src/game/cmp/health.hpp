@@ -11,5 +11,8 @@ struct HealthComponent_t : public ECS::ComponentBase_t<HealthComponent_t>
     {
     }
 
+    uint32_t selfDamageOnInfliction { 1 };
+    uint32_t damageInflicted { 1 };
+    uint32_t damage { 0 }; // Acumulated damage from collisions
     uint32_t health { 1 };
 };
