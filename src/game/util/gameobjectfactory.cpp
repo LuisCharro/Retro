@@ -174,3 +174,58 @@ GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
 
     return e; 
 }
+
+void
+GameObjectFactory_t::CreateLevel1() const
+{
+    // Platforms
+
+    constexpr std::array levelData {
+        0b0'0'0'0'0'0'0'0
+    ,   0b0'0'0'0'0'0'0'1
+    ,   0b0'0'0'0'0'0'0'1
+    ,   0b0'1'1'0'0'0'0'1
+    ,   0b0'0'0'0'0'0'1'1
+    ,   0b0'0'0'0'0'1'1'1
+    ,   0b0'1'1'0'1'1'1'1
+    ,   0b0'0'0'0'0'0'0'0
+    ,   0b0'1'1'0'1'1'1'1
+    };
+
+    uint32_t y {0};
+    for(auto row: levelData)
+    {
+        for(uint32_t x = 0; x < 808; x+= 101)
+        {
+            if (row & 0x80)
+            {
+                CreatePlatform(x,y);
+            }
+            row <<= 1;
+        }
+        y += 50;
+    }
+
+    // Player
+    CreatePlayer(1,1);
+    
+    // Demo entities
+    //CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
+    //CreateSpriteEntity(600,50,8,8, sprite);
+    
+    // Enemies
+    CreateGhost(240,100);
+    
+    CreateSpawner(200,1,
+        // Adding as parameter a Lambda with "a function as parameter" 
+        [&](const SpawnerComponent_t& spw)
+        {
+            std::cout << "Using lambda to invokate a method" << std::endl;
+            const auto* phy = m_EntityMan.GetRequiredComponent<PhysicsComponent_t>(spw);
+
+            if (!phy) return;
+
+            [[maybe_unused]]auto& e = CreateGhost(phy->x, phy->y);                
+        }
+    );
+}

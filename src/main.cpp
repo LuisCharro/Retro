@@ -70,37 +70,7 @@ int main(int argc, char const *argv[])
 
         GameObjectFactory_t GOFact {EntityMan};
 
-        // Platforms
-        
-        GOFact.CreatePlatform(200,343);
-        GOFact.CreatePlatform(301,343);
-        GOFact.CreatePlatform(402,343);
-
-        GOFact.CreatePlatform(300,292);
-        GOFact.CreatePlatform(421,250);
-
-        // Player
-        GOFact.CreatePlayer(1,1);
-        
-        // Demo entities
-        //GOFact.CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
-        //GOFact.CreateSpriteEntity(600,50,8,8, sprite);
-        
-        // Enemies
-        GOFact.CreateGhost(240,100);
-        
-        GOFact.CreateSpawner(200,1,
-            // Adding as parameter a Lambda with "a function as parameter" 
-            [&](const SpawnerComponent_t& spw)
-            {
-                std::cout << "Using lambda to invokate a method" << std::endl;
-                const auto* phy = EntityMan.GetRequiredComponent<PhysicsComponent_t>(spw);
-
-                if (!phy) return;
-
-                [[maybe_unused]]auto& e = GOFact.CreateGhost(phy->x, phy->y);                
-            }
-        );
+        GOFact.CreateLevel1();        
 
         using clk = std::chrono::steady_clock;
         auto lastTime = clk::now();
@@ -136,3 +106,4 @@ int main(int argc, char const *argv[])
  
     return 0;
 }
+
