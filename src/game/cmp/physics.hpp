@@ -15,25 +15,33 @@ struct PhysicsComponent_t : public ECS::ComponentBase_t<PhysicsComponent_t>
     }
 
     //constexpr --> Inline + posibility to inicialize calling a constexpr function 
-    static constexpr int32_t KGravity   {  1 };
+    // Change to linear coordinates from int32_t or uint32_t to float
+    static constexpr float KGravity   {  0.5f };
 
-    static constexpr int32_t KMinVy     { -6 };
-    static constexpr int32_t KMaxVy     {  6 };
+    static constexpr float KMinVy     { -6.0f };
+    static constexpr float KMaxVy     {  6.0f };
 
-    static constexpr int32_t KMinVx     { -5 };
-    static constexpr int32_t KMaxVx     {  5 };
-    static constexpr uint8_t KTimesVyIs0ToJump { 4 };
+    static constexpr float KMinVx     { -5.0f };
+    static constexpr float KMaxVx     {  5.0f };
+
+    static constexpr float KStdAx     {  0.6f };//{  1.0f };
+
+    static constexpr float KMinVyForNotOnPlatform { 2.5*KGravity };
 
     // 15 -->Non-type template parameter
     //static const std::array<int,15> jumpTable 
     static constexpr std::array jumpTable 
     { -7, -7, -7, -6, -6, -6, -5, -5, -5, -4, -4, -4, -3, -3, -2 };    
+    
+    // Change to linear coordinates from int32_t or uint32_t to float
+    float x  { 0 }, y  { 0 };
+    float vx { 0 }, vy { 0 };
+    float ax { 0 };
+    float friction { 1.0f };
+    float gravity { KGravity };
 
-    uint32_t  x { 0 },  y { 0 };
-    int32_t  vx { 0 }, vy { 0 };
+    //TODO: Do not use float use a type with fix 
 
-    int32_t gravity { KGravity };
-
-    uint8_t jumpIdx    { jumpTable.size() };
-    uint8_t timesVyIs0 { 0 };
+    uint8_t jumpIdx    { jumpTable.size() };    
+    bool onPlatform { false }; //Fast solution; not good to have a boolean inside an structure
 };

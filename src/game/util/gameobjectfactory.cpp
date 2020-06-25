@@ -161,6 +161,7 @@ GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
 
     ph.x = x; ph.y = y;    
     ph.gravity = 0;
+    ph.friction = 0.85f;
 
     rn.transparency = true;
     rn.LoadFromFile("assets/platform.png");
@@ -187,9 +188,10 @@ GameObjectFactory_t::CreateLevel1() const
     ,   0b0'1'1'0'0'0'0'1
     ,   0b0'0'0'0'0'0'1'1
     ,   0b0'0'0'0'0'1'1'1
-    ,   0b0'1'1'0'1'1'1'1
+    ,   0b1'1'1'0'1'1'1'1
     ,   0b0'0'0'0'0'0'0'0
-    ,   0b0'1'1'0'1'1'1'1
+    ,   0b0'0'0'0'0'0'0'0
+    ,   0b0'1'1'1'1'1'1'1
     };
 
     uint32_t y {0};
@@ -203,7 +205,7 @@ GameObjectFactory_t::CreateLevel1() const
             }
             row <<= 1;
         }
-        y += 50;
+        y += 51;
     }
 
     // Player

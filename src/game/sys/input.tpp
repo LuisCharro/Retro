@@ -63,14 +63,13 @@ InputSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 
             if (phy)
             {
-                phy->vx = 0;                
+                phy->ax = 0;                
 
-                if (m_Keyboard.IsKeyPressed(inp.Key_LEFT))  { phy->vx = -5; }
-                if (m_Keyboard.IsKeyPressed(inp.Key_RIGHT)) { phy->vx =  5; }
+                if (m_Keyboard.IsKeyPressed(inp.Key_LEFT))  { phy->ax = -phy->KStdAx; }
+                if (m_Keyboard.IsKeyPressed(inp.Key_RIGHT)) { phy->ax =  phy->KStdAx; }
                 if (m_Keyboard.IsKeyPressed(inp.Key_UP))    
                 {
-                    if (    phy->jumpIdx    == phy->jumpTable.size()
-                        &&  phy->timesVyIs0 == phy->KTimesVyIs0ToJump  )
+                    if ( phy->onPlatform && phy->jumpIdx  == phy->jumpTable.size() )                        
                     {
                         phy->jumpIdx = 0;
                     }                    

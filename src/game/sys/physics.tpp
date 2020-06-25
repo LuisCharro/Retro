@@ -14,16 +14,9 @@ PhysicsSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 {
     for (auto& phy : g.template GetComponents<PhysicsComponent_t>()) 
     {
-        // Count times Vy is 0        
-        if (phy.vy == 0)            
-        {
-            constexpr uint8_t z { 0 };
-            phy.timesVyIs0 = std::clamp(++phy.timesVyIs0, z, phy.KTimesVyIs0ToJump);            
-        }
-        else
-        {
-            phy.timesVyIs0 = 0;
-        }        
+        // Verify if we are still on platform       
+        if (std::abs(phy.vy) > phy.KMinVyForNotOnPlatform)
+            phy.onPlatform = false;
 
         // Jump
         if (phy.jumpIdx < phy.jumpTable.size())
@@ -35,6 +28,10 @@ PhysicsSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
         // Gravity
         phy.vy += phy.gravity;        
         std::clamp(phy.vy, phy.KMinVy, phy.KMaxVy);
+
+        // Acceleration
+        phy.vx += phy.ax;        
+        std::clamp(phy.vx, phy.KMinVx, phy.KMaxVx);
 
         // Update positions
         phy.x += phy.vx;

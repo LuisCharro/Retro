@@ -6,6 +6,7 @@ extern "C"
 }
 
 #include <algorithm>
+#include <cmath>
 
 // Systems
 #include "render.hpp"
@@ -94,8 +95,8 @@ RenderSystem_t<GameCTX_t>::RenderSpriteClipped(const RenderComponent_t& ren, con
     uint32_t up_off {0};
 
     // Drawing Coordinates and size
-    uint32_t x { phy.x };
-    uint32_t y { phy.y };
+    uint32_t x { static_cast<uint32_t>(std::round(phy.x)) };
+    uint32_t y { static_cast<uint32_t>(std::round(phy.y)) };
     uint32_t w { ren.w };
     uint32_t h { ren.h };
 

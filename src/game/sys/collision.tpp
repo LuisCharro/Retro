@@ -202,6 +202,10 @@ CollisionSystem_t<GameCTX_t>::UndoCollision(GameCTX_t& g, ColliderComponent_t& s
     {
         phymobile->y += overlap.y;
         phymobile->vy = 0;
+
+        //if (overlap.y < 0) phymobile->onPlatform = true;
+        phymobile->onPlatform = (overlap.y < 0); // Its better do this calculation than use an If
+        phymobile->vx *= (phymobile->friction * phySolid->friction);
     }
     else
     {
