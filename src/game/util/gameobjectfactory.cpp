@@ -161,7 +161,7 @@ GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
 
     ph.x = x; ph.y = y;    
     ph.gravity = 0;
-    ph.friction = 0.85f;
+    ph.friction = 0.90f;
 
     rn.transparency = true;
     rn.LoadFromFile("assets/platform.png");
@@ -173,6 +173,21 @@ GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
     cl.boxRoot.box.yUp    = 0;    
     cl.boxRoot.box.yDown  = rn.h;
 
+    return e; 
+}
+
+ECS::Entity_t& 
+GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h) const
+{
+    auto& e  = m_EntityMan.CreateEntity();
+    auto& cam = m_EntityMan.AddComponent<CameraComponent_t>(e);
+    [[maybe_unused]] auto& phy = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
+
+    cam.scrx = x; cam.scry = y;
+    cam.w = w; cam.h = h;
+
+    //ph.x = x; ph.y = y;    
+    
     return e; 
 }
 
@@ -230,4 +245,6 @@ GameObjectFactory_t::CreateLevel1() const
             [[maybe_unused]]auto& e = CreateGhost(phy->x, phy->y);                
         }
     );
+
+    CreateCamera(0,0, 640, 360);
 }

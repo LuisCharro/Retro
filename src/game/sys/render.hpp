@@ -3,12 +3,20 @@
 #include <cstdint>
 #include <memory>
 
-#include <ecs/cmp/entity.hpp>
 #include <ecs/util/typealiases.hpp>
+
+#include <ecs/cmp/entity.hpp>
+
+#include <game/cmp/camera.hpp>
+#include <game/cmp/box.hpp>
 
 struct RenderComponent_t;
 struct PhysicsComponent_t;
-struct BoundingBox_t;
+
+struct CameraWithPhysics_t {
+    const CameraComponent_t* cam {nullptr};
+    const PhysicsComponent_t* phy {nullptr};
+};
 
 template<typename GameCTX_t>
 struct RenderSystem_t
@@ -39,6 +47,8 @@ struct RenderSystem_t
         constexpr void DrawBox (const BoundingBox_t& box, uint32_t x, uint32_t y, uint32_t color) const noexcept;
         constexpr void DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32_t x, uint32_t y, uint32_t color) const noexcept;
 
+        constexpr void DrawAllCameras(const GameCTX_t& g) const;
+
         static constexpr uint32_t kR = 0x00FF0000; // Red
         static constexpr uint32_t kG = 0x0000FF00; // Green
         static constexpr uint32_t kB = 0x000000FF; // Blue
@@ -48,6 +58,8 @@ struct RenderSystem_t
 
         mutable bool m_debugDraw  {true};
         mutable uint32_t m_debugColor {kRedAlfa};
+
+        mutable CameraWithPhysics_t m_currentCam {};
 
         const uint32_t m_w {0}, m_h{0};
         //A default constructor will add those values (If, I do not indicate diferently on they)

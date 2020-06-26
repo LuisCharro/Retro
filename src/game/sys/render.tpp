@@ -40,14 +40,13 @@ RenderSystem_t<GameCTX_t>::Update(const GameCTX_t& g)const
 
     PrintBackGroundColor(screen,m_w, m_h, kBlack);
 
-    DrawAllEntities(g);
+    DrawAllCameras(g);
 
     ptc_update(screen);
 
     return !ptc_process_events();
 }
 
-//Revised but with code after modifications
 template<typename GameCTX_t>
 void 
 RenderSystem_t<GameCTX_t>::DrawAllEntities(const GameCTX_t& g) const noexcept
@@ -72,6 +71,23 @@ RenderSystem_t<GameCTX_t>::DrawAllEntities(const GameCTX_t& g) const noexcept
             DrawBoxTree(col->boxRoot, phy->x, phy->y, m_debugColor);
         }
     });
+}
+
+template<typename GameCTX_t>
+constexpr void 
+RenderSystem_t<GameCTX_t>::DrawAllCameras(const GameCTX_t& g) const
+{    
+    for (auto& cam : g.template GetComponents<CameraComponent_t>())
+    {        
+        const auto* phy = g.template GetRequiredComponent<PhysicsComponent_t>(cam);
+
+        if (!phy) return;
+
+        m_currentCam.cam = &cam;
+        m_currentCam.phy = phy;
+
+        DrawAllEntities(g);
+    }
 }
 
 template<typename GameCTX_t>
@@ -181,7 +197,6 @@ RenderSystem_t<GameCTX_t>::RenderInScreenBox (uint32_t* screen, const BoundingBo
     }
 }
 
-//Revised
 template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderInScreenLine (uint32_t* screen, uint32_t length, uint32_t stride, uint32_t pixel) const noexcept
@@ -194,7 +209,6 @@ RenderSystem_t<GameCTX_t>::RenderInScreenLine (uint32_t* screen, uint32_t length
     }
 }
 
-//Revised
 template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderAlignedLineClipped (uint32_t x1, uint32_t x2, uint32_t y, bool yaxis, uint32_t pixel) const noexcept
@@ -242,7 +256,6 @@ RenderSystem_t<GameCTX_t>::RenderAlignedLineClipped (uint32_t x1, uint32_t x2, u
     RenderInScreenLine(screen, xend-xini, stride, pixel);
 }
 
-//Revised
 template<typename GameCTX_t>
 constexpr void
 RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept
@@ -276,7 +289,6 @@ RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x
     RenderInScreenBox(GetScreenXY(box.xLeft, box.yUp), box, pixel);
 }
 
-//Revised
 template<typename GameCTX_t>
 constexpr void 
 RenderSystem_t<GameCTX_t>::DrawBox (const BoundingBox_t& box, uint32_t x, uint32_t y, uint32_t color) const noexcept
@@ -291,6 +303,7 @@ RenderSystem_t<GameCTX_t>::DrawBox (const BoundingBox_t& box, uint32_t x, uint32
     RenderAlignedLineClipped(y1, y2, x1, true, color);
     RenderAlignedLineClipped(y1, y2, x2, true, color);
 }
+
 template<typename GameCTX_t>
 constexpr void 
 RenderSystem_t<GameCTX_t>::DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32_t x, uint32_t y, uint32_t color) const noexcept
