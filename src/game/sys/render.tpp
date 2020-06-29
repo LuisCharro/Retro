@@ -5,6 +5,8 @@ extern "C"
     #include "lib/tinyPTC/src/tinyptc.h"
 }
 
+
+#include <iostream>
 #include <algorithm>
 #include <cmath>
 
@@ -57,7 +59,7 @@ RenderSystem_t<GameCTX_t>::DrawAllEntities(const GameCTX_t& g) const noexcept
         // RenderComponent_t must be of an entity that also has a PhysicsComponent_t
         const auto* phy = g.template GetRequiredComponent<PhysicsComponent_t>(rc);
 
-        if (!phy) return;
+        if (!phy) return;        
 
         RenderSpriteClipped(rc, *phy);
 
@@ -102,83 +104,120 @@ template<typename GameCTX_t>
 constexpr void 
 RenderSystem_t<GameCTX_t>::RenderSpriteClipped(const RenderComponent_t& ren, const PhysicsComponent_t& phy) const noexcept
 {
-        auto getScreenXY = [&](uint32_t x, uint32_t y) {
-        return m_framebuffer.get() + y * m_w + x;
-    };
-
-    // Clipping
-    uint32_t left_off {0};
-    uint32_t up_off {0};
-
-    // Drawing Coordinates and size
-    uint32_t x { static_cast<uint32_t>(std::round(phy.x)) };
-    uint32_t y { static_cast<uint32_t>(std::round(phy.y)) };
-    uint32_t w { ren.w };
-    uint32_t h { ren.h };
-
     bool transparency {ren.transparency};
 
-    // Horizontal clipping rules
-    if ( x > m_w)                           //Left clipping
+    // Check Camera Coordiantes
+    if (!m_currentCam.cam ||!m_currentCam.phy) return;
+
+    auto& CamScr{ *m_currentCam.cam };
+    auto& CamWrl{ *m_currentCam.phy };
+
+    // Sprite ---> World ---> Camera ---> Screen
+    //        +pos     -poscam    +poscamscr
+    struct {
+        BoundingBox_t<float> world  {};
+        BoundingBox_t<float> camera {};
+        BoundingBox_t<float> crop {};
+        
+        struct {
+            uint32_t x {}, y{}, w{}, h{};
+        } screen;
+
+    } spr;
+    
+    // Sprite -> World Coors    
+    spr.world = {
+            phy.x         //xLeft
+        ,   phy.x + ren.w //xRight
+        ,   phy.y         //yUp
+        ,   phy.y + ren.h //yDown
+    };
+
+    // Sprite -> Camera Coors
+    // CamScr // CamWrl
+    spr.camera = {
+        spr.world.xLeft  - CamWrl.x, //xLeft
+        spr.world.xRight - CamWrl.x, //xRight
+        spr.world.yUp    - CamWrl.y, //yUp
+        spr.world.yDown  - CamWrl.y  //yDown
+    };
+
+    // Sprite Clipping
+    // Position of the sprite respecto to the camera
+    if (    spr.camera.xRight < 0 || spr.camera.xLeft > CamScr.w ||
+            spr.camera.yDown  < 0 || spr.camera.yUp   > CamScr.h)
     {
-        left_off = 0 - x;
-        if (left_off >= w) return;          // Nothing to draw
-        x=0;
-        w-= left_off;
-    }
-    else if (x + ren.w >= m_w)              // Right clipping
-    {
-        uint32_t right_off = x + w - m_w;
-        if (right_off >= w ) return;        // Nothing to draw
-        w -= right_off;
+        return;
     }
 
-    // Vertical clipping rules
-    if (y >= m_h)                   // Up clipping
-    {
-        up_off = 0 - y;
-        if (up_off >= h) return;    // Nothing to draw
-        y = 0;
-        h -= up_off;
-    } 
-    else if (y + ren.h >= m_h)      // Down clipping
-    {
-        uint32_t down_off = y + h - m_h;
-        if (down_off >= h) return; // Nothing to draw
-        h -= down_off;
-    }
+    // Sprite Cropping
+    // Cropping all contents of the sprite outside of the Camera
+    spr.crop = {
+            (spr.camera.xLeft  < 0       ) ? -spr.camera.xLeft            : 0
+        ,   (spr.camera.xRight > CamScr.w) ? spr.camera.xRight - CamScr.w : 0
+        ,   (spr.camera.yUp    < 0       ) ? -spr.camera.yUp              : 0
+        ,   (spr.camera.yDown  > CamScr.h) ? spr.camera.yDown  - CamScr.h : 0
+    };
 
-    // Render the entity
-    auto screen2 = getScreenXY(x,y);
-    auto sprite_it = begin(ren.sprite) + up_off*ren.w + left_off;
+    // Sprite -> Screen Coords (x, y ,w , h)
+    spr.screen = {
+            static_cast<uint32_t>(std::round(spr.camera.xLeft + CamScr.scrx    + spr.crop.xLeft))
+        ,   static_cast<uint32_t>(std::round(spr.camera.yUp   + CamScr.scry    + spr.crop.yUp))
+        ,   static_cast<uint32_t>(std::round(ren.w            - spr.crop.xLeft - spr.crop.xRight))
+        ,   static_cast<uint32_t>(std::round(ren.h            - spr.crop.yUp   - spr.crop.yDown))
+    };    
 
-    while (h--)
-    {
-        for (uint32_t i = 0; i < w; ++i)
+    // Render the entity    
+    auto* screen   = GetScreenXY(spr.screen.x,spr.screen.y);
+    auto sprite_it = begin(ren.sprite) + spr.crop.yUp * ren.w + spr.crop.xLeft;
+
+    // std::cout << "RenderSpriteClipped " << std::endl;
+
+    // std::cout << "spr.world.xLeft,xRight {" << spr.world.xLeft << "," << spr.world.xRight << "}" <<std::endl;
+    // std::cout << "spr.world.yUp,yDown    {" << spr.world.yUp   << "," << spr.world.yDown  << "}" <<std::endl;
+    // std::cout << " " << std::endl;
+
+    // std::cout << "spr.camera.xLeft,xRight {" << spr.camera.xLeft << "," << spr.camera.xRight << "}" <<std::endl;
+    // std::cout << "spr.camera.yUp,yDown    {" << spr.camera.yUp   << "," << spr.camera.yDown  << "}" <<std::endl;
+    // std::cout << " " << std::endl;
+
+    // std::cout << "spr.crop.xLeft,xRight   {" << spr.crop.xLeft << "," << spr.crop.xRight << "}" <<std::endl;
+    // std::cout << "spr.crop.yUp,yDown      {" << spr.crop.yUp   << "," << spr.crop.yDown  << "}" <<std::endl;
+    // std::cout << " " << std::endl;
+
+    // std::cout << "spr.screen.x,y {" << spr.screen.x << "," << spr.screen.y << "}" <<std::endl;
+    // std::cout << "spr.screen.h,w {" << spr.screen.h << "," << spr.screen.w << "}" <<std::endl;
+    // std::cout << " " << std::endl;
+    // std::cin.get();
+
+    while (spr.screen.h--)
+    {        
+        for (uint32_t i = 0; i < spr.screen.w; ++i)
         {
             // Draw only if transparency != 0 (Not blending)
-            if (!transparency)
+            if (transparency)
             {
-                *screen2 = *sprite_it;
+                if (*sprite_it & 0xFF000000)
+                     *screen = *sprite_it;
             }
             else
             {
-                if (*sprite_it & 0xFF000000)
-                    *screen2 = *sprite_it;
-            }
+                *screen = *sprite_it;
+            }            
             
             ++sprite_it;
-            ++screen2;
+            ++screen;            
         }
-        sprite_it += ren.w - w;
-        screen2 += m_w -w;
+        
+        sprite_it += ren.w - spr.screen.w;
+        screen    += m_w   - spr.screen.w;        
     }
 }
 
 //Revised
 template<typename GameCTX_t>
 constexpr void
-RenderSystem_t<GameCTX_t>::RenderInScreenBox (uint32_t* screen, const BoundingBox_t& box, uint32_t pixel) const noexcept
+RenderSystem_t<GameCTX_t>::RenderInScreenBox (uint32_t* screen, const BoundingBox_t<uint32_t>& box, uint32_t pixel) const noexcept
 {
     const uint32_t width { box.xRight - box.xLeft };
     uint32_t height { box.yDown - box.yUp };
@@ -258,7 +297,7 @@ RenderSystem_t<GameCTX_t>::RenderAlignedLineClipped (uint32_t x1, uint32_t x2, u
 
 template<typename GameCTX_t>
 constexpr void
-RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept
+RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t<uint32_t> box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept
 {
     //Crop function
     auto crop = [](uint32_t &val, uint32_t max, uint32_t inf)
@@ -291,7 +330,7 @@ RenderSystem_t<GameCTX_t>::RenderAlignedBoxClipped(BoundingBox_t box, uint32_t x
 
 template<typename GameCTX_t>
 constexpr void 
-RenderSystem_t<GameCTX_t>::DrawBox (const BoundingBox_t& box, uint32_t x, uint32_t y, uint32_t color) const noexcept
+RenderSystem_t<GameCTX_t>::DrawBox (const BoundingBox_t<uint32_t>& box, uint32_t x, uint32_t y, uint32_t color) const noexcept
 {
     uint32_t x1 { x + box.xLeft };
     uint32_t x2 { x + box.xRight };

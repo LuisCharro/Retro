@@ -71,8 +71,8 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
     const PhysicsComponent_t& p2) const noexcept
 {
     // Move Boundng Boxes to screen coordinates
-    auto b1 = Move2ScreenCoords(bn1.box, p1.x, p1.y);
-    auto b2 = Move2ScreenCoords(bn2.box, p2.x, p2.y);
+    auto b1 = Move2WorldCoords(bn1.box, p1.x, p1.y);
+    auto b2 = Move2WorldCoords(bn2.box, p2.x, p2.y);
 
     // Check collisions in one generic axis
     auto checkIntervals = [](uint32_t L1,uint32_t R1,uint32_t L2,uint32_t R2)
@@ -169,8 +169,8 @@ CollisionSystem_t<GameCTX_t>::UndoCollision(GameCTX_t& g, ColliderComponent_t& s
 
     if (!phySolid || !phymobile) return;
 
-    auto solidBox = Move2ScreenCoords(solid.boxRoot.box, phySolid->x, phySolid->y);
-    auto mobileBox = Move2ScreenCoords(mobile.boxRoot.box, phymobile->x, phymobile->y);
+    auto solidBox = Move2WorldCoords(solid.boxRoot.box, phySolid->x, phySolid->y);
+    auto mobileBox = Move2WorldCoords(mobile.boxRoot.box, phymobile->x, phymobile->y);
 
     //           |----|     Right
     // |----|               Left
@@ -245,10 +245,10 @@ CollisionSystem_t<GameCTX_t>::ReactToCollision(GameCTX_t& g, ColliderComponent_t
 }
 
 template<typename GameCTX_t>
-constexpr BoundingBox_t  
-CollisionSystem_t<GameCTX_t>::Move2ScreenCoords(const BoundingBox_t& box, uint32_t x, uint32_t y) const noexcept
+constexpr BoundingBox_t<float>  
+CollisionSystem_t<GameCTX_t>::Move2WorldCoords(const BoundingBox_t<uint32_t>& box, float x, float y) const noexcept
 {
-    BoundingBox_t screenBox 
+    BoundingBox_t<float> screenBox 
     {
          x + box.xLeft 
         ,x + box.xRight
@@ -263,8 +263,8 @@ template<typename GameCTX_t>
 constexpr void  
 CollisionSystem_t<GameCTX_t>::CheckBoundaryCollisions(const ColliderComponent_t& c, PhysicsComponent_t&p) const noexcept
 {
-    // Coordinate conversion --> to screen coordinates
-    auto b { Move2ScreenCoords(c.boxRoot.box, p.x, p.y) };
+    // Coordinate conversion --> to world coordinates
+    auto b { Move2WorldCoords(c.boxRoot.box, p.x, p.y) };
 
     // Collisions
     if ( b.xLeft > m_w || b.xRight > m_w) { p.x -= p.vx; p.vx = -p.vx; }

@@ -40,11 +40,11 @@ struct RenderSystem_t
         void PrintBackGroundColor(uint32_t screen[], uint32_t w, uint32_t h,  uint32_t iColor) const;
         constexpr uint32_t* GetScreenXY(uint32_t x, uint32_t y) const {return m_framebuffer.get()+ y * m_w + x;};
         constexpr void RenderSpriteClipped(const RenderComponent_t& ren, const PhysicsComponent_t& phy) const noexcept;
-        constexpr void RenderInScreenBox (uint32_t* screen, const BoundingBox_t& box, uint32_t pixel) const noexcept;
+        constexpr void RenderInScreenBox (uint32_t* screen, const BoundingBox_t<uint32_t>& box, uint32_t pixel) const noexcept;
         constexpr void RenderInScreenLine (uint32_t* screen, uint32_t length, uint32_t stride, uint32_t pixel) const noexcept;
         constexpr void RenderAlignedLineClipped (uint32_t x1, uint32_t x2, uint32_t y, bool yaxis, uint32_t pixel) const noexcept;
-        constexpr void RenderAlignedBoxClipped (BoundingBox_t box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept;
-        constexpr void DrawBox (const BoundingBox_t& box, uint32_t x, uint32_t y, uint32_t color) const noexcept;
+        constexpr void RenderAlignedBoxClipped (BoundingBox_t<uint32_t> box, uint32_t x, uint32_t y, uint32_t pixel) const noexcept;
+        constexpr void DrawBox (const BoundingBox_t<uint32_t>& box, uint32_t x, uint32_t y, uint32_t color) const noexcept;
         constexpr void DrawBoxTree (const BoundingBoxNode_t& boxNode, uint32_t x, uint32_t y, uint32_t color) const noexcept;
 
         constexpr void DrawAllCameras(const GameCTX_t& g) const;

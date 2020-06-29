@@ -33,25 +33,6 @@ const int KS_ESCAPE = 0xFF1B;
 constexpr auto FPS { 60 };
 constexpr auto MSPF { 1000ms/FPS };
  
-struct Screen_t
-{
-    Screen_t(uint32_t w, uint32_t h) : screen(new uint32_t [w*h])
-    {}
-     
-    // Screen_t(uint32_t w, uint32_t h)
-    // {
-    //  screen = new uint32_t [w*h];
-    // }
- 
-    ~Screen_t()
-    {
-        std::cout << "~Screen_t()" << std::endl;
-        delete [] screen;
-    }
- 
-    uint32_t *screen { nullptr };
-};
- 
 int main(int argc, char const *argv[])
 {
     try
@@ -63,7 +44,7 @@ int main(int argc, char const *argv[])
         InputSystem_t<ECS::EntityManager_t> Input;
         SpawnSystem_t<ECS::EntityManager_t> Spawn;
         const HealthSystem_t<ECS::EntityManager_t> Health;
-        Render.SetDebugDraw(true);
+        Render.SetDebugDraw(false);
 
         // Entities
         ECS::EntityManager_t EntityMan;

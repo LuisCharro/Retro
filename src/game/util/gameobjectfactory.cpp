@@ -181,10 +181,12 @@ GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h
 {
     auto& e  = m_EntityMan.CreateEntity();
     auto& cam = m_EntityMan.AddComponent<CameraComponent_t>(e);
-    [[maybe_unused]] auto& phy = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
+    auto& phy = m_EntityMan.AddComponent<PhysicsComponent_t>(e);
+    phy.gravity = 0;
 
     cam.scrx = x; cam.scry = y;
     cam.w = w; cam.h = h;
+
 
     //ph.x = x; ph.y = y;    
     
@@ -194,8 +196,11 @@ GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h
 void
 GameObjectFactory_t::CreateLevel1() const
 {
-    // Platforms
-
+    CreateCamera(0,0, 640, 360);
+    
+    CreatePlayer(50,50);
+    
+    // Level 1 map
     constexpr std::array levelData {
         0b0'0'0'0'0'0'0'0
     ,   0b0'0'0'0'0'0'0'1
@@ -221,10 +226,7 @@ GameObjectFactory_t::CreateLevel1() const
             row <<= 1;
         }
         y += 51;
-    }
-
-    // Player
-    CreatePlayer(1,1);
+    }   
     
     // Demo entities
     //CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
@@ -245,6 +247,4 @@ GameObjectFactory_t::CreateLevel1() const
             [[maybe_unused]]auto& e = CreateGhost(phy->x, phy->y);                
         }
     );
-
-    CreateCamera(0,0, 640, 360);
 }
