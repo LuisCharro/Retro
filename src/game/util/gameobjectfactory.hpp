@@ -48,7 +48,7 @@ struct GameObjectFactory_t
     ECS::Entity_t& CreateSpriteEntity(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint32_t sprite[]) const;    
     ECS::Entity_t& CreatePlayer(uint32_t x, uint32_t y) const;
     ECS::Entity_t& CreateGhost(uint32_t x, uint32_t y) const;
-    ECS::Entity_t& CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h) const;
+    ECS::Entity_t& CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h, ECS::EntityID_t followEID) const;
 
     ECS::Entity_t& CreatePlatform(uint32_t x, uint32_t y) const;
 

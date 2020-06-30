@@ -17,5 +17,7 @@ struct CameraComponent_t : public ECS::ComponentBase_t<CameraComponent_t>
     // Proyection from Sprite --> to the World --> to Camera --> to Screen
     uint32_t scrx {0}, scry {0};    
 
-    uint32_t w {KDefaultWidth}, h {KDefaultHeight};    
+    uint32_t w {KDefaultWidth}, h {KDefaultHeight};
+
+    ECS::EntityID_t followEntityID {0};
 };

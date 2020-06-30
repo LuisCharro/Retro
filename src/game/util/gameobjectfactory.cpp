@@ -101,6 +101,8 @@ GameObjectFactory_t::CreatePlayer(uint32_t x, uint32_t y) const
     
     if (c)
     {
+        //xor
+        c->mask ^= ColliderComponent_t::L_Boundaries;
         c->properties = ColliderComponent_t::P_IsPlayer;
         c->boxRoot.box= {3,37,4,72};
         c->boxRoot.childs =  {
@@ -132,7 +134,8 @@ GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
     auto* ph = e.getComponent<PhysicsComponent_t>();
     auto* h = e.getComponent<HealthComponent_t>();
 
-    c->mask = ColliderComponent_t::L_Blades;
+    // Or
+    c->mask = ColliderComponent_t::L_Blades | ColliderComponent_t::L_Boundaries;
     c->properties = ColliderComponent_t::P_Damages;
 
     c->boxRoot.box.xLeft  = 5;
@@ -177,7 +180,7 @@ GameObjectFactory_t::CreatePlatform(uint32_t x, uint32_t y) const
 }
 
 ECS::Entity_t& 
-GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h) const
+GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h, ECS::EntityID_t followEID) const
 {
     auto& e  = m_EntityMan.CreateEntity();
     auto& cam = m_EntityMan.AddComponent<CameraComponent_t>(e);
@@ -186,7 +189,7 @@ GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h
 
     cam.scrx = x; cam.scry = y;
     cam.w = w; cam.h = h;
-
+    cam.followEntityID = followEID;
 
     //ph.x = x; ph.y = y;    
     
@@ -196,10 +199,8 @@ GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h
 void
 GameObjectFactory_t::CreateLevel1() const
 {
-    CreateCamera(0,0, 640, 360);
-    
-    CreatePlayer(50,50);
-    
+    auto& pl { CreatePlayer(50,50) };   
+
     // Level 1 map
     constexpr std::array levelData {
         0b0'0'0'0'0'0'0'0
@@ -209,9 +210,9 @@ GameObjectFactory_t::CreateLevel1() const
     ,   0b0'0'0'0'0'0'1'1
     ,   0b0'0'0'0'0'1'1'1
     ,   0b1'1'1'0'1'1'1'1
-    ,   0b0'0'0'0'0'0'0'0
-    ,   0b0'0'0'0'0'0'0'0
-    ,   0b0'1'1'1'1'1'1'1
+    ,   0b1'0'0'0'0'0'0'1
+    ,   0b1'0'0'0'0'0'0'1
+    ,   0b1'1'1'1'1'1'1'1
     };
 
     uint32_t y {0};
@@ -235,7 +236,7 @@ GameObjectFactory_t::CreateLevel1() const
     // Enemies
     CreateGhost(240,100);
     
-    CreateSpawner(200,1,
+    auto& sp = CreateSpawner(200,1,
         // Adding as parameter a Lambda with "a function as parameter" 
         [&](const SpawnerComponent_t& spw)
         {
@@ -247,4 +248,7 @@ GameObjectFactory_t::CreateLevel1() const
             [[maybe_unused]]auto& e = CreateGhost(phy->x, phy->y);                
         }
     );
+
+    CreateCamera(  0,  0, 400, 360, pl.getEntityID());
+    CreateCamera(410,100, 230, 160, sp.getEntityID());
 }

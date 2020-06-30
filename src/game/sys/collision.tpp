@@ -40,7 +40,8 @@ CollisionSystem_t<GameCTX_t>::Update(GameCTX_t& g) const
 
         if (!p1) { continue; }
 
-        CheckBoundaryCollisions(c1, *p1);
+        if (c1.mask & ColliderComponent_t::L_Boundaries)
+            CheckBoundaryCollisions(c1, *p1);
 
         for (std::size_t j=i+1; j < ColCmpVec.size(); ++j) 
         {
@@ -75,7 +76,7 @@ CollisionSystem_t<GameCTX_t>::CheckObjectCollision(
     auto b2 = Move2WorldCoords(bn2.box, p2.x, p2.y);
 
     // Check collisions in one generic axis
-    auto checkIntervals = [](uint32_t L1,uint32_t R1,uint32_t L2,uint32_t R2)
+    auto checkIntervals = [](float L1,float R1,float L2,float R2)
     {
         // 2 Possibilities 
         // I1   L1--------R1               |              L1--------R1
@@ -180,7 +181,7 @@ CollisionSystem_t<GameCTX_t>::UndoCollision(GameCTX_t& g, ColliderComponent_t& s
 
     // Calculate intersection
     // Trailing Return Type
-    auto intervalIntersection =[](uint32_t Ml, uint32_t Mr, uint32_t Sl, uint32_t Sr) -> int32_t
+    auto intervalIntersection =[](float Ml, float Mr, float Sl, float Sr) -> float
     {
         // Left
         if (Ml < Sl)
@@ -192,7 +193,7 @@ CollisionSystem_t<GameCTX_t>::UndoCollision(GameCTX_t& g, ColliderComponent_t& s
                              return 0;
     };
 
-    struct { int32_t x, y; } overlap {
+    struct { float x, y; } overlap {
             intervalIntersection(mobileBox.xLeft, mobileBox.xRight, solidBox.xLeft, solidBox.xRight)
         ,   intervalIntersection(mobileBox.yUp,   mobileBox.yDown,  solidBox.yUp,   solidBox.yDown)
     };
@@ -227,7 +228,7 @@ CollisionSystem_t<GameCTX_t>::ReactToCollision(GameCTX_t& g, ColliderComponent_t
     }
     else if ( !(c1.properties & CP::P_IsPlayer) )  // Now only interesting in collisions to the player
     {
-        std::cout << "ReactToCollision No player in collision " << std::endl; 
+        //std::cout << "ReactToCollision No player in collision " << std::endl; 
         return;
     }
 
@@ -267,8 +268,8 @@ CollisionSystem_t<GameCTX_t>::CheckBoundaryCollisions(const ColliderComponent_t&
     auto b { Move2WorldCoords(c.boxRoot.box, p.x, p.y) };
 
     // Collisions
-    if ( b.xLeft > m_w || b.xRight > m_w) { p.x -= p.vx; p.vx = -p.vx; }
-    if ( b.yUp   > m_h || b.yDown  > m_h) 
+    if ( b.xLeft > m_w || b.xRight > 0) { p.x -= p.vx; p.vx = -p.vx; }
+    if ( b.yUp   > m_h || b.yDown  > 0) 
     {
         p.y -= p.vy;
 

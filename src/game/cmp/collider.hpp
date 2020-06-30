@@ -16,11 +16,11 @@ struct ColliderComponent_t : public ECS::ComponentBase_t<ColliderComponent_t>
     }
 
     enum {
-            L_NoLayer   = 0x00
-        ,   L_Blades    = 0x01
-        ,   L_Platforms = 0x02
-
-        ,   L_All       = 0xFF
+            L_NoLayer    = 0x00
+        ,   L_Blades     = 0x01
+        ,   L_Platforms  = 0x02
+        ,   L_Boundaries = 0x04
+        ,   L_All        = 0xFF
     };
 
     enum {

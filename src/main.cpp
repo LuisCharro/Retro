@@ -18,6 +18,7 @@ extern "C"
 #include <game/sys/collision.tpp>
 #include <game/sys/spawn.tpp>
 #include <game/sys/health.tpp>
+#include <game/sys/camera.tpp>
 
 // Managers
 #include <ecs/man/entitymanager.tpp>
@@ -43,6 +44,7 @@ int main(int argc, char const *argv[])
         CollisionSystem_t<ECS::EntityManager_t> Collision{kSCRWIDTH,kSCRHEIGHT};
         InputSystem_t<ECS::EntityManager_t> Input;
         SpawnSystem_t<ECS::EntityManager_t> Spawn;
+        CameraSystem_t<ECS::EntityManager_t> Camera;
         const HealthSystem_t<ECS::EntityManager_t> Health;
         Render.SetDebugDraw(false);
 
@@ -58,6 +60,7 @@ int main(int argc, char const *argv[])
 
         while (!Input.IsKeyPressed(KS_ESCAPE))
         {
+            Camera.Update(EntityMan);
             Render.Update(EntityMan);
             Input.Update(EntityMan);
             Physics.Update(EntityMan);
