@@ -53,6 +53,7 @@ struct GameObjectFactory_t
     ECS::Entity_t& CreatePlatform(uint32_t x, uint32_t y) const;
 
     void CreateLevel1() const;
+    void LoadLevelJSON(std::string_view filepath) const;
 
     template <typename CALLABLE_t>
     ECS::Entity_t& 

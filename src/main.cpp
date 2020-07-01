@@ -53,7 +53,8 @@ int main(int argc, char const *argv[])
 
         GameObjectFactory_t GOFact {EntityMan};
 
-        GOFact.CreateLevel1();        
+        //GOFact.CreateLevel1();  
+        GOFact.LoadLevelJSON("assets/levels/level1.json");        
 
         using clk = std::chrono::steady_clock;
         auto lastTime = clk::now();
@@ -80,13 +81,13 @@ int main(int argc, char const *argv[])
     {
         std::cout << "Capturada: " << s << std::endl;
     }
+    catch (std::exception e)
+    {
+        std::cout << "Exception: " << e.what() << std::endl;
+    }
     catch (const std::system_error& e) {
         std::clog << e.what() << " (" << e.code() << ")" << std::endl;
-    }
-    catch (std::exception &e)
-    {
-        std::cout << "Capturada" << std::endl;
-    }
+    }    
  
     return 0;
 }

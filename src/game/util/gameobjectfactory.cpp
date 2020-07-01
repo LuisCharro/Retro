@@ -1,4 +1,7 @@
 #include <iostream>
+#include <fstream>
+#include <lib/picoJSON/picojson.hpp>
+
 
 #include "gameobjectfactory.hpp"
 
@@ -199,8 +202,9 @@ GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h
 void
 GameObjectFactory_t::CreateLevel1() const
 {
-    auto& pl { CreatePlayer(50,50) };   
+    
 
+    /*
     // Level 1 map
     constexpr std::array levelData {
         0b0'0'0'0'0'0'0'0
@@ -228,7 +232,8 @@ GameObjectFactory_t::CreateLevel1() const
         }
         y += 51;
     }   
-    
+    */
+
     // Demo entities
     //CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
     //CreateSpriteEntity(600,50,8,8, sprite);
@@ -236,7 +241,8 @@ GameObjectFactory_t::CreateLevel1() const
     // Enemies
     CreateGhost(240,100);
     
-    auto& sp = CreateSpawner(200,1,
+    //auto& sp = CreateSpawner(200,1,
+    CreateSpawner(200,1,
         // Adding as parameter a Lambda with "a function as parameter" 
         [&](const SpawnerComponent_t& spw)
         {
@@ -249,6 +255,58 @@ GameObjectFactory_t::CreateLevel1() const
         }
     );
 
-    CreateCamera(  0,  0, 400, 360, pl.getEntityID());
-    CreateCamera(410,100, 230, 160, sp.getEntityID());
+    auto& pl { CreatePlayer( 100,100) };   
+    CreateCamera(  0,  0, 640, 360, pl.getEntityID());
+    //CreateCamera(410,100, 230, 160, sp.getEntityID());
+}
+
+void
+GameObjectFactory_t::LoadLevelJSON(std::string_view filepath) const
+{
+    // Open JSON file
+    namespace pj = picojson;
+    std::ifstream file (filepath.data());
+
+    if (!file)
+    {
+        throw std::runtime_error("Can't open JSON file");
+    }
+
+    // Read JSON
+    pj::value json;
+    file >> json;
+
+    std::string err {pj::get_last_error()};
+
+    if (!err.empty())
+    {
+        throw std::runtime_error(err);
+    }   
+
+    //OBJ
+    //ARRAY
+    //DOUBLE
+    //STRING
+    //BOOL
+
+    const auto& root {json.get<pj::object>()};
+    const auto& h    {root.at("height").get<double>()};
+    const auto& w    {root.at("width").get<double>()};
+    const auto& map  {root.at("map").get<pj::array>()};
+
+    if (map.size() != w*h)
+    {
+        throw std::runtime_error("Map size error");
+    }
+
+    uint32_t x {0}, y {0};
+
+    for(auto& elem: map)
+    {
+        const auto& tile { static_cast<bool>(elem.get<double>())};
+        if (tile) CreatePlatform(101*x,50*y);
+        if (++x == w) {x=0; ++y;}
+    }   
+
+    CreateLevel1();
 }
