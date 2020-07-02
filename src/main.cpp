@@ -54,7 +54,9 @@ int main(int argc, char const *argv[])
         GameObjectFactory_t GOFact {EntityMan};
 
         //GOFact.CreateLevel1();  
-        GOFact.LoadLevelJSON("assets/levels/level1.json");        
+        // GOFact.LoadLevelJSON("assets/levels/level1.json");
+        // GOFact.Json2Bin("assets/levels/level1.json","assets/levels/level1.bin");
+        GOFact.LoadLevelBin("assets/levels/level1.bin");
 
         using clk = std::chrono::steady_clock;
         auto lastTime = clk::now();

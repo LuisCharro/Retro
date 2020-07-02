@@ -261,6 +261,58 @@ GameObjectFactory_t::CreateLevel1() const
 }
 
 void
+GameObjectFactory_t::Json2Bin(std::string_view jsonpath, std::string_view binpath) const
+{
+    // Open JSON file
+    namespace pj = picojson;
+    std::ifstream fileJson (jsonpath.data());
+
+    if (!fileJson)
+    {
+        throw std::runtime_error("Can't open JSON file");
+    }
+
+    // Open Bin file (Overwrite)
+    std::ofstream fileBin (binpath.data(), std::ofstream::binary | std::ofstream::trunc);
+
+    if (!fileBin)
+    {
+        throw std::runtime_error("Can't create BIN file");
+    }
+
+    // Read JSON
+    pj::value json;
+    fileJson >> json;
+
+    std::string err {pj::get_last_error()};
+
+    if (!err.empty())
+    {
+        throw std::runtime_error(err);
+    }    
+   
+    const auto& root { json.get<pj::object>()};
+    const auto& h    { static_cast<uint32_t>(root.at("height").get<double>())};
+    const auto& w    { static_cast<uint32_t>(root.at("width").get<double>())};
+    const auto& map  { root.at("map").get<pj::array>()};
+
+    if (map.size() != w*h)
+    {
+        throw std::runtime_error("Map size error");
+    }
+
+    // Write to binary
+    fileBin.write(reinterpret_cast<const char*> (&w), sizeof w);
+    fileBin.write(reinterpret_cast<const char*> (&h), sizeof h);
+
+    for(auto& elem: map)
+    {
+        const auto& tile { static_cast<uint8_t>(elem.get<double>())};
+        fileBin.write(reinterpret_cast<const char*> (&tile), sizeof tile);
+    }
+}
+
+void
 GameObjectFactory_t::LoadLevelJSON(std::string_view filepath) const
 {
     // Open JSON file
@@ -281,14 +333,8 @@ GameObjectFactory_t::LoadLevelJSON(std::string_view filepath) const
     if (!err.empty())
     {
         throw std::runtime_error(err);
-    }   
-
-    //OBJ
-    //ARRAY
-    //DOUBLE
-    //STRING
-    //BOOL
-
+    }
+    
     const auto& root {json.get<pj::object>()};
     const auto& h    {root.at("height").get<double>()};
     const auto& w    {root.at("width").get<double>()};
@@ -307,6 +353,58 @@ GameObjectFactory_t::LoadLevelJSON(std::string_view filepath) const
         if (tile) CreatePlatform(101*x,50*y);
         if (++x == w) {x=0; ++y;}
     }   
+
+    CreateLevel1();
+}
+
+void
+GameObjectFactory_t::LoadLevelBin(std::string_view filepath) const
+{
+    // Open BIN file
+    std::ifstream file (filepath.data(), std::ifstream::binary);
+
+    if (!file)
+    {
+        throw std::runtime_error("Can't open BIN file for read");
+    }
+
+    // Calculate file lenght
+    std::size_t lenght = [&]()
+    {
+        file.seekg(0, std::ifstream::end);
+        auto l { file.tellg()};
+        file.seekg(0, std::ifstream::beg);
+        return l;
+    }(); //<-- Inmediate invoke
+
+    if (lenght < 8) throw std::runtime_error("Binary file corrupt. Size too small");
+
+    //Read whole file at once
+    std::vector<char> filemem(lenght);
+    auto* pfilemem = filemem.data();
+    file.read(pfilemem, lenght);
+
+    uint32_t h{}, w{};
+    std::memcpy(&w, pfilemem + 0, sizeof w);
+    std::memcpy(&h, pfilemem + 4, sizeof h);
+    //C++ 20 std::bitcast
+
+    // Not good --> There are not uint32_t inside filemem (std::vector<char>)
+    // w = *reinterpret_cast<uint32_t*>(filemem + 0);
+    // h = *reinterpret_cast<uint32_t*>(filemem + 4);
+
+    if (w*h != (lenght -8)) throw std::runtime_error("Bad size in Bin file level");
+
+    pfilemem +=8;
+
+    for(uint32_t y=0; y <h; ++y)
+    {
+        for(uint32_t x=0; x <w; ++x)
+        {
+            if (*pfilemem) CreatePlatform(101*x,50*y);
+            pfilemem++;
+        }    
+    }
 
     CreateLevel1();
 }

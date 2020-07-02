@@ -81,6 +81,7 @@
         "valarray": "cpp",
         "variant": "cpp",
         "filesystem": "cpp",
-        "__functional_base_03": "cpp"
+        "__functional_base_03": "cpp",
+        "cinttypes": "cpp"
     }
 }

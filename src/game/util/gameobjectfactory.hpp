@@ -54,6 +54,8 @@ struct GameObjectFactory_t
 
     void CreateLevel1() const;
     void LoadLevelJSON(std::string_view filepath) const;
+    void Json2Bin(std::string_view jsonpath, std::string_view binpath) const;
+    void LoadLevelBin(std::string_view filepath) const;
 
     template <typename CALLABLE_t>
     ECS::Entity_t& 
