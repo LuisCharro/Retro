@@ -202,38 +202,6 @@ GameObjectFactory_t::CreateCamera(uint32_t x, uint32_t y, uint32_t w, uint32_t h
 void
 GameObjectFactory_t::CreateLevel1() const
 {
-    
-
-    /*
-    // Level 1 map
-    constexpr std::array levelData {
-        0b0'0'0'0'0'0'0'0
-    ,   0b0'0'0'0'0'0'0'1
-    ,   0b0'0'0'0'0'0'0'1
-    ,   0b0'1'1'0'0'0'0'1
-    ,   0b0'0'0'0'0'0'1'1
-    ,   0b0'0'0'0'0'1'1'1
-    ,   0b1'1'1'0'1'1'1'1
-    ,   0b1'0'0'0'0'0'0'1
-    ,   0b1'0'0'0'0'0'0'1
-    ,   0b1'1'1'1'1'1'1'1
-    };
-
-    uint32_t y {0};
-    for(auto row: levelData)
-    {
-        for(uint32_t x = 0; x < 808; x+= 101)
-        {
-            if (row & 0x80)
-            {
-                CreatePlatform(x,y);
-            }
-            row <<= 1;
-        }
-        y += 51;
-    }   
-    */
-
     // Demo entities
     //CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
     //CreateSpriteEntity(600,50,8,8, sprite);

@@ -117,7 +117,7 @@ RenderSystem_t<GameCTX_t>::RenderSpriteClipped(const RenderComponent_t& ren, con
     struct {
         BoundingBox_t<float> world  {};
         BoundingBox_t<float> camera {};
-        BoundingBox_t<float> crop {};
+        BoundingBox_t<uint32_t> crop {};
         
         struct {
             uint32_t x {}, y{}, w{}, h{};
@@ -153,18 +153,18 @@ RenderSystem_t<GameCTX_t>::RenderSpriteClipped(const RenderComponent_t& ren, con
     // Sprite Cropping
     // Cropping all contents of the sprite outside of the Camera
     spr.crop = {
-            (spr.camera.xLeft  < 0       ) ? -spr.camera.xLeft            : 0
-        ,   (spr.camera.xRight > CamScr.w) ? spr.camera.xRight - CamScr.w : 0
-        ,   (spr.camera.yUp    < 0       ) ? -spr.camera.yUp              : 0
-        ,   (spr.camera.yDown  > CamScr.h) ? spr.camera.yDown  - CamScr.h : 0
+            static_cast<uint32_t>(std::round((spr.camera.xLeft  < 0       ) ? -spr.camera.xLeft            : 0))
+        ,   static_cast<uint32_t>(std::round((spr.camera.xRight > CamScr.w) ? spr.camera.xRight - CamScr.w : 0))
+        ,   static_cast<uint32_t>(std::round((spr.camera.yUp    < 0       ) ? -spr.camera.yUp              : 0))
+        ,   static_cast<uint32_t>(std::round((spr.camera.yDown  > CamScr.h) ? spr.camera.yDown  - CamScr.h : 0))
     };
 
     // Sprite -> Screen Coords (x, y ,w , h)
     spr.screen = {
-            static_cast<uint32_t>(std::round(spr.camera.xLeft + CamScr.scrx    + spr.crop.xLeft))
-        ,   static_cast<uint32_t>(std::round(spr.camera.yUp   + CamScr.scry    + spr.crop.yUp))
-        ,   static_cast<uint32_t>(std::round(ren.w            - spr.crop.xLeft - spr.crop.xRight))
-        ,   static_cast<uint32_t>(std::round(ren.h            - spr.crop.yUp   - spr.crop.yDown))
+            static_cast<uint32_t>(std::round(spr.camera.xLeft) + CamScr.scrx    + spr.crop.xLeft)
+        ,   static_cast<uint32_t>(std::round(spr.camera.yUp)   + CamScr.scry    + spr.crop.yUp)
+        ,   ren.w            - spr.crop.xLeft - spr.crop.xRight
+        ,   ren.h            - spr.crop.yUp   - spr.crop.yDown
     };    
 
     // Render the entity    
