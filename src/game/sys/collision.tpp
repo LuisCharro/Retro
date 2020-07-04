@@ -266,10 +266,17 @@ CollisionSystem_t<GameCTX_t>::CheckBoundaryCollisions(const ColliderComponent_t&
 {
     // Coordinate conversion --> to world coordinates
     auto b { Move2WorldCoords(c.boxRoot.box, p.x, p.y) };
+    // std::cout << "m_w    : " << m_w     << " m_h     : " << m_h << std::endl; 
+    // std::cout << "b.xLeft: " << b.xLeft << " b.xRight: " << b.xRight << std::endl; 
+    // std::cout << "b.yUp  : " << b.yUp   << " b.yDown : " << b.yDown << std::endl;     
 
     // Collisions
-    if ( b.xLeft > m_w || b.xRight > 0) { p.x -= p.vx; p.vx = -p.vx; }
-    if ( b.yUp   > m_h || b.yDown  > 0) 
+    if ( b.xLeft > m_w || b.xRight < 0)
+    {
+        p.x -= p.vx; p.vx = -p.vx;
+    }
+    
+    if ( b.yUp   > m_h || b.yDown  < 0)
     {
         p.y -= p.vy;
 
