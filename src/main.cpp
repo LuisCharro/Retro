@@ -26,13 +26,18 @@ extern "C"
 // Factory
 #include <game/util/gameobjectfactory.hpp>
 
+// Util
+#include <game/util/timer.hpp>
 
 constexpr uint32_t kSCRWIDTH {640};
 constexpr uint32_t kSCRHEIGHT {360};
 const int KS_ESCAPE = 0xFF1B;
 
-constexpr auto FPS { 60 };
-constexpr auto MSPF { 1000ms/FPS };
+//constexpr auto FPS { 60 };
+//constexpr auto MSPF { 1000ms/FPS };
+
+constexpr uint64_t FPS { 60 };
+constexpr uint64_t NSPF { 1000000000UL/FPS };
  
 int main(int argc, char const *argv[])
 {
@@ -53,13 +58,14 @@ int main(int argc, char const *argv[])
 
         GameObjectFactory_t GOFact {EntityMan};
 
-        //GOFact.CreateLevel1();  
-        // GOFact.LoadLevelJSON("assets/levels/level1.json");
-        // GOFact.Json2Bin("assets/levels/level1.json","assets/levels/level1.bin");
-        GOFact.LoadLevelBin("assets/levels/level1.bin");
+        GameTImer_t timer;
+        // using clk = std::chrono::steady_clock;
+        // auto lastTime = clk::now();
 
-        using clk = std::chrono::steady_clock;
-        auto lastTime = clk::now();
+        //GOFact.CreateLevel1();  
+        //GOFact.Json2Bin("assets/levels/level1.json","assets/levels/level1.bin");        
+        //GOFact.LoadLevelJSON("assets/levels/level1.json");         
+        GOFact.LoadLevelBin("assets/levels/level1.bin");
 
         while (!Input.IsKeyPressed(KS_ESCAPE))
         {
@@ -71,12 +77,13 @@ int main(int argc, char const *argv[])
             Health.Update(EntityMan);
             Spawn.Update(EntityMan);
 
-            auto interval = clk::now()-lastTime;
+            timer.waitUntil_ns(NSPF);
+            timer.start();
 
-            if (interval < MSPF)
-                std::this_thread::sleep_for(MSPF - interval);
-
-            lastTime = clk::now();
+            // auto interval = clk::now()-lastTime;
+            // if (interval < MSPF)
+            //     std::this_thread::sleep_for(MSPF - interval);
+            // lastTime = clk::now();
         }
     }
     catch (const char* s)
