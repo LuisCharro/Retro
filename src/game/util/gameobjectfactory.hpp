@@ -70,7 +70,8 @@ struct GameObjectFactory_t
         rn.transparency = true;
         rn.LoadFromFile("assets/tomb.png");
 
-        cl.mask = ColliderComponent_t::L_NoLayer;
+        //cl.mask = ColliderComponent_t::L_NoLayer;
+        cl.mask = ColliderComponent_t::L_Boundaries;
 
         cl.boxRoot.box.xLeft = 0;
         cl.boxRoot.box.xRight = rn.w;

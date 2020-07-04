@@ -137,7 +137,7 @@ GameObjectFactory_t::CreateGhost(uint32_t x, uint32_t y) const
     auto* ph = e.getComponent<PhysicsComponent_t>();
     auto* h = e.getComponent<HealthComponent_t>();
 
-    // Or
+    // operator --> | --> Or
     c->mask = ColliderComponent_t::L_Blades | ColliderComponent_t::L_Boundaries;
     c->properties = ColliderComponent_t::P_Damages;
 
@@ -203,11 +203,12 @@ void
 GameObjectFactory_t::CreateLevel1() const
 {
     // Demo entities
-    //CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
-    //CreateSpriteEntity(600,50,8,8, sprite);
+    CreateRectangleEntity(300,10,16,16, 0x00FFFFFF);
+    CreateSpriteEntity(600,50,8,8, sprite);
     
     // Enemies
     CreateGhost(240,100);
+    //auto& g = CreateGhost(240,100);
     
     //auto& sp = CreateSpawner(200,1,
     CreateSpawner(200,1,
@@ -225,6 +226,8 @@ GameObjectFactory_t::CreateLevel1() const
 
     auto& pl { CreatePlayer( 100,100) };   
     CreateCamera(  0,  0, 640, 360, pl.getEntityID());
+    //CreateCamera(  0,  0, 640, 360, g.getEntityID());
+    //CreateCamera(410,100, 230, 160, sp.getEntityID());
     //CreateCamera(410,100, 230, 160, sp.getEntityID());
 }
 
