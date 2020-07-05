@@ -26,7 +26,7 @@ struct GameTImer_t
         {
             auto towait {to_ns - ellapsed()};
             std::this_thread::sleep_for(nano_t{towait});
-            return towait;
+            //return towait;
         }
         
         return 0;

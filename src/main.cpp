@@ -33,9 +33,6 @@ constexpr uint32_t kSCRWIDTH {640};
 constexpr uint32_t kSCRHEIGHT {360};
 const int KS_ESCAPE = 0xFF1B;
 
-//constexpr auto FPS { 60 };
-//constexpr auto MSPF { 1000ms/FPS };
-
 constexpr uint64_t FPS { 60 };
 constexpr uint64_t NSPF { 1000000000UL/FPS };
  
@@ -58,14 +55,18 @@ int main(int argc, char const *argv[])
 
         GameObjectFactory_t GOFact {EntityMan};
 
-        GameTImer_t timer;
-        // using clk = std::chrono::steady_clock;
-        // auto lastTime = clk::now();
+        GameTImer_t timer;       
 
-        //GOFact.CreateLevel1();  
+        auto timeCall = [](std::string_view name, auto func){
+            GameTImer_t internalTimer;
+            func();
+            std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000 << " ";
+        };
+        
+        //timeCall("JSO",[&GOFact](){GOFact.LoadLevelJSON("assets/levels/level1.json"); } );
         //GOFact.Json2Bin("assets/levels/level1.json","assets/levels/level1.bin");        
-        //GOFact.LoadLevelJSON("assets/levels/level1.json");         
-        GOFact.LoadLevelBin("assets/levels/level1.bin");
+
+        timeCall("BIN",[&GOFact](){GOFact.LoadLevelBin("assets/levels/level1.bin"); } );        
 
         while (!Input.IsKeyPressed(KS_ESCAPE))
         {
@@ -77,13 +78,17 @@ int main(int argc, char const *argv[])
             Health.Update(EntityMan);
             Spawn.Update(EntityMan);
 
-            timer.waitUntil_ns(NSPF);
-            timer.start();
+            // timeCall("CAM",[&](){ Camera.Update(EntityMan); } );
+            // timeCall("REN",[&](){ Render.Update(EntityMan); } );
+            // timeCall("INP",[&](){ Input.Update(EntityMan); } );
+            // timeCall("PHY",[&](){ Physics.Update(EntityMan); } );
+            // timeCall("COL",[&](){ Collision.Update(EntityMan); } );
+            // timeCall("HEA",[&](){ Health.Update(EntityMan); } );
+            // timeCall("SPA",[&](){ Spawn.Update(EntityMan); } );
 
-            // auto interval = clk::now()-lastTime;
-            // if (interval < MSPF)
-            //     std::this_thread::sleep_for(MSPF - interval);
-            // lastTime = clk::now();
+            //std::cout << "EXT" << timer.waitUntil_ns(NSPF) << std::endl;
+            timer.waitUntil_ns(NSPF);
+            timer.start();           
         }
     }
     catch (const char* s)
