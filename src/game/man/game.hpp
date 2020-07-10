@@ -22,14 +22,40 @@ extern "C"
 #include <game/sys/health.tpp>
 #include <game/sys/camera.tpp>
 
-// Managers
-#include <ecs/man/entitymanager.tpp>
-
 // Factory
 #include <game/util/gameobjectfactory.hpp>
 
 // Util
 #include <game/util/timer.hpp>
+
+// Managers
+#include <ecs/man/entitymanager.tpp>
+#include <game/man/state.hpp>
+
+#include <X11/keysym.h>
+
+
+struct PauseState_t : StateBase_t{
+    explicit PauseState_t() = default;
+
+    void Update() final {
+        std::cout << R"(
+            GAME PAUSED            
+            [ TYPE IN SOMETHING ])";
+
+            int opt;
+            std::cin >> opt;
+            std::cin.ignore(10000,'\n');
+            std::cin.clear();
+
+            m_alive = false;
+    }
+
+    bool Alive() final { return m_alive; }
+
+    private:
+        bool m_alive {true};
+};
 
  auto timeCall = [](std::string_view name, auto func){
     GameTImer_t internalTimer;
@@ -37,16 +63,16 @@ extern "C"
     std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000 << " ";
 };
 
-struct GameManager_t
+struct GameManager_t : StateBase_t
 {
-    explicit GameManager_t() {
+    explicit GameManager_t(StateManager_t& sm) : SM{sm} {
 
         Render.SetDebugDraw(false);
 
         timeCall("BIN",[&](){GOFact.LoadLevelBin("assets/levels/level1.bin"); } );
     }
 
-    void Update(){
+    void Update() final {
 
         GameTImer_t timer;
 
@@ -69,21 +95,24 @@ struct GameManager_t
         //std::cout << "EXT" << timer.waitUntil_ns(NSPF) << std::endl;
         timer.waitUntil_ns(NSPF);
 
-        //while (!Input.IsKeyPressed(KS_ESCAPE))
-        if (Input.IsKeyPressed(KS_ESCAPE))
+        if (Input.IsKeyPressed(XK_Escape))
             m_playing = false;
+
+        if (Input.IsKeyPressed(XK_p))
+            SM.PushState<PauseState_t>();
     }
 
-    bool Alive() {return m_playing;}
+    bool Alive() final {return m_playing;}
 
     private:
 
         static constexpr uint32_t kSCRWIDTH {640};
-        static constexpr uint32_t kSCRHEIGHT {360};
-        static const int KS_ESCAPE = 0xFF1B;
+        static constexpr uint32_t kSCRHEIGHT {360};        
 
         static constexpr uint64_t FPS { 60 };
         static constexpr uint64_t NSPF { 1000000000UL/FPS };
+
+        StateManager_t& SM;
 
         ECS::EntityManager_t EntityMan {};
         GameObjectFactory_t GOFact {EntityMan};

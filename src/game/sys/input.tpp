@@ -20,6 +20,7 @@ InputSystem_t<GameCTX_t>::InputSystem_t()
 {
     ptc_set_on_keypress(OnKeyPress);
     ptc_set_on_keyrelease(OnKeyReleased);
+    m_Keyboard.reset();
 }
 
 template<typename GameCTX_t>

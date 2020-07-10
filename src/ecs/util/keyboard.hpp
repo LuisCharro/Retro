@@ -30,6 +30,11 @@ namespace ECS {
                 (*it)->second = false;
         };
 
+        void reset() noexcept{
+            for (auto& [_,st]: m_pressedKeys)
+                st = false;
+        }
+
         private:
 
         OptIter GetIterator(KeySym k) noexcept;
