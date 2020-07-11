@@ -64,7 +64,7 @@ struct GameManager_t : StateBase_t
         // timeCall("SPA",[&](){ Spawn.Update(EntityMan); } );
 
         timer.waitUntil_ns(NSPF);
-        //std::cout << "EXT" << timer.waitUntil_ns(NSPF) / 1000 << "\n";
+        //std::cout << "EXT " << std::setw(6) << std::setfill('0') << timer.waitUntil_ns(NSPF) / 1000 << "\n";
         timer.start();
 
         if (Input.IsKeyPressed(XK_Escape))

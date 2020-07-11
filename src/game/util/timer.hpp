@@ -41,6 +41,6 @@ struct GameTimer_t
 
  auto timeCall = [](std::string_view name, auto func){
     GameTimer_t internalTimer;
-    func();
-    std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000 << " ";
+    func();    
+    std::cout << "[" << name << "] " << std::setw(6) << std::setfill('0') << internalTimer.ellapsed() / 1000 << " ";
 };
