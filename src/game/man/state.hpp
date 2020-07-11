@@ -4,6 +4,14 @@
 #include <memory>
 #include <type_traits>
 
+struct GameManager_t;
+
+//  auto timeCall = [](std::string_view name, auto func){
+//     GameTImer_t internalTimer;
+//     func();
+//     std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000000 << " ";
+// };
+
 struct StateBase_t{
     virtual void Update() = 0;
     virtual bool Alive() = 0;
@@ -37,4 +45,56 @@ struct StateManager_t{
 
     private:
         std::stack<std::unique_ptr<StateBase_t>> m_States;
+};
+
+struct MenuState_t : StateBase_t{
+    explicit MenuState_t(StateManager_t& sm) : SM {sm} {}
+
+    void Update() final {
+        std::cout << R"(
+            MENU:
+            1. Play
+            2. Options
+            -. Exit
+            [Select Option])";
+
+            int opt;
+            std::cin >> opt;
+            switch(opt)
+            {
+                case 1 : SM.PushState<GameManager_t>(SM); break;
+                //case 2 : options(); break;
+                default : m_alive = false;
+            }
+    }
+
+    bool Alive() final {
+        return m_alive;
+    }
+
+    private:
+        bool m_alive {true};
+        StateManager_t& SM;
+};
+
+struct PauseState_t : StateBase_t{
+    explicit PauseState_t() = default;
+
+    void Update() final {
+        std::cout << R"(
+            GAME PAUSED            
+            [ TYPE IN SOMETHING ])";
+
+            int opt;
+            std::cin >> opt;
+            std::cin.ignore(10000,'\n');
+            std::cin.clear();
+
+            m_alive = false;
+    }
+
+    bool Alive() final { return m_alive; }
+
+    private:
+        bool m_alive {true};
 };

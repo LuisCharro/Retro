@@ -26,7 +26,7 @@ struct GameTImer_t
         {
             auto towait {to_ns - ellapsed()};
             std::this_thread::sleep_for(nano_t{towait});
-            //return towait;
+            return towait;
         }
         
         return 0;
@@ -35,4 +35,10 @@ struct GameTImer_t
     private:
         
         timepoint_t m_start;
+};
+
+ auto timeCall = [](std::string_view name, auto func){
+    GameTImer_t internalTimer;
+    func();
+    std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000 << " ";
 };

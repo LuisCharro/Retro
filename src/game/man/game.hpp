@@ -34,35 +34,6 @@ extern "C"
 
 #include <X11/keysym.h>
 
-
-struct PauseState_t : StateBase_t{
-    explicit PauseState_t() = default;
-
-    void Update() final {
-        std::cout << R"(
-            GAME PAUSED            
-            [ TYPE IN SOMETHING ])";
-
-            int opt;
-            std::cin >> opt;
-            std::cin.ignore(10000,'\n');
-            std::cin.clear();
-
-            m_alive = false;
-    }
-
-    bool Alive() final { return m_alive; }
-
-    private:
-        bool m_alive {true};
-};
-
- auto timeCall = [](std::string_view name, auto func){
-    GameTImer_t internalTimer;
-    func();
-    std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000 << " ";
-};
-
 struct GameManager_t : StateBase_t
 {
     explicit GameManager_t(StateManager_t& sm) : SM{sm} {
@@ -92,8 +63,8 @@ struct GameManager_t : StateBase_t
         // timeCall("HEA",[&](){ Health.Update(EntityMan); } );
         // timeCall("SPA",[&](){ Spawn.Update(EntityMan); } );
 
-        //std::cout << "EXT" << timer.waitUntil_ns(NSPF) << std::endl;
-        timer.waitUntil_ns(NSPF);
+        // std::cout << "EXT" << timer.waitUntil_ns(NSPF) << std::endl;
+        // timer.waitUntil_ns(NSPF);
 
         if (Input.IsKeyPressed(XK_Escape))
             m_playing = false;
