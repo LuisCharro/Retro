@@ -1,24 +1,23 @@
-/*
- * TinyPTC x11 v0.7.3 Raw XLib target
- * Copyright (C) 2000-2002 Alessandro Gatti <a.gatti@tiscali.it>
- *
- * http://www.sourceforge.net/projects/tinyptc/
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- */
+//
+// This file is part of tinyPTC, UA version 2019
+// Based on TinyPTC-X11-0.7.3 Raw XLib target
+// Copyright (C) 2002 by Alessandro Gatti (a.gatti@tiscali.it)
+// Copyright (C) 2019 by Francisco J. Gallego-Durán (@FranGallegoBR)
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+//
 
 /* #includes */
 
@@ -35,18 +34,11 @@
 
 #include "xlib.h"
 
-/* Keypress event processing callbacks */
+/* Open the screen */
+
 void ptc_do_nothing(KeySym a) {
 }
 
-void ptc_set_on_keypress  ( void (*onkeypress)  (KeySym) ) {
-  ptc_onkeypress = onkeypress;
-}
-void ptc_set_on_keyrelease( void (*onkeyrelease)(KeySym) ) {
-  ptc_onkeyrelease = onkeyrelease;
-}
-
-/* Open the screen */
 int ptc_open(const char *title, int width, int height) {
   /* Open a display on the current root window */
   ptc_display = XOpenDisplay(NULL);
@@ -200,11 +192,26 @@ int ptc_update(void *buffer) {
             ptc_viewport_width, ptc_viewport_height);
   /* Check for incoming events */
   XFlush(ptc_display);
-
+  /* Process incoming events */
+//  if (ptc_process_events()) {
+//#ifdef __PTC_CLEANUP_CALLBACK__
+//    ptc_cleanup_callback();
+//#endif /* __PTC_CLEANUP_CALLBACK__ */
+//    ptc_close();
+//    exit(0);
+//  }
   return PTC_SUCCESS;
 }
 
 /* Process events */
+
+void ptc_set_on_keypress  ( void (*onkeypress)  (KeySym) ) {
+  ptc_onkeypress = onkeypress;
+}
+void ptc_set_on_keyrelease( void (*onkeyrelease)(KeySym) ) {
+  ptc_onkeyrelease = onkeyrelease;
+}
+
 
 int ptc_process_events(void) {
   XEvent ptc_xevent;
