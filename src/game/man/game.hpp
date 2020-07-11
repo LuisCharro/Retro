@@ -45,7 +45,7 @@ struct GameManager_t : StateBase_t
 
     void Update() final {
 
-        GameTImer_t timer;
+        GameTimer_t timer;
 
         Camera.Update(EntityMan);
         Render.Update(EntityMan);
@@ -63,8 +63,9 @@ struct GameManager_t : StateBase_t
         // timeCall("HEA",[&](){ Health.Update(EntityMan); } );
         // timeCall("SPA",[&](){ Spawn.Update(EntityMan); } );
 
-        // std::cout << "EXT" << timer.waitUntil_ns(NSPF) << std::endl;
-        // timer.waitUntil_ns(NSPF);
+        timer.waitUntil_ns(NSPF);
+        //std::cout << "EXT" << timer.waitUntil_ns(NSPF) / 1000 << "\n";
+        timer.start();
 
         if (Input.IsKeyPressed(XK_Escape))
             m_playing = false;

@@ -3,13 +3,16 @@
 #include <chrono>
 #include <thread>
 
-struct GameTImer_t
+struct GameTimer_t
 {
     using clk           = std::chrono::steady_clock;
     using nano_t        = std::chrono::duration<uint64_t,std::nano>;
     using timepoint_t   = std::chrono::time_point<clk, nano_t>;
 
-    explicit GameTImer_t() noexcept = default;
+    explicit GameTimer_t() noexcept 
+    {
+        start();
+    }
 
     void start() noexcept { m_start = clk::now(); }
 
@@ -27,8 +30,7 @@ struct GameTImer_t
             auto towait {to_ns - ellapsed()};
             std::this_thread::sleep_for(nano_t{towait});
             return towait;
-        }
-        
+        }        
         return 0;
     }
 
@@ -38,7 +40,7 @@ struct GameTImer_t
 };
 
  auto timeCall = [](std::string_view name, auto func){
-    GameTImer_t internalTimer;
+    GameTimer_t internalTimer;
     func();
     std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000 << " ";
 };
