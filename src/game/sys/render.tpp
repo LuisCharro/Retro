@@ -5,7 +5,6 @@ extern "C"
     #include "lib/tinyPTC/src/tinyptc.h"
 }
 
-
 #include <iostream>
 #include <algorithm>
 #include <cmath>
@@ -18,6 +17,9 @@ extern "C"
 // Components
 #include <game/cmp/physics.hpp>
 #include <game/cmp/render.hpp>
+
+// Util
+//#include <game/util/timer.hpp>
 
 template<typename GameCTX_t>
 RenderSystem_t<GameCTX_t>::RenderSystem_t(uint32_t w, uint32_t h):
@@ -40,10 +42,13 @@ RenderSystem_t<GameCTX_t>::Update(const GameCTX_t& g)const
 {
     auto screen = m_framebuffer.get();
 
+    // timeCall("BackColor",[&](){ PrintBackGroundColor(screen,m_w, m_h, kBlack); } );
+    // timeCall("DrawAllCameras",[&](){ DrawAllCameras(g); } );
+    // timeCall("Ptc_Update",[&](){ ptc_update(screen); } );
+    // std::cout << "\n";    
+
     PrintBackGroundColor(screen,m_w, m_h, kBlack);
-
     DrawAllCameras(g);
-
     ptc_update(screen);
 
     return !ptc_process_events();
