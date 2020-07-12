@@ -6,12 +6,6 @@
 
 struct GameManager_t;
 
-//  auto timeCall = [](std::string_view name, auto func){
-//     GameTImer_t internalTimer;
-//     func();
-//     std::cout << "[" << name << "] " << internalTimer.ellapsed() / 1000000 << " ";
-// };
-
 struct StateBase_t{
     virtual void Update() = 0;
     virtual bool Alive() = 0;
@@ -55,7 +49,7 @@ struct MenuState_t : StateBase_t{
             MENU:
             1. Play
             2. Options
-            -. Exit
+            0. Exit
             [Select Option])";
 
             int opt;
@@ -64,7 +58,7 @@ struct MenuState_t : StateBase_t{
             {
                 case 1 : SM.PushState<GameManager_t>(SM); break;
                 //case 2 : options(); break;
-                default : m_alive = false;
+                case 0 :  m_alive = false;                
             }
     }
 
