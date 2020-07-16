@@ -47,24 +47,24 @@ struct GameManager_t : StateBase_t
 
         GameTimer_t timer;
 
-        Camera.Update(EntityMan);
-        Render.Update(EntityMan);
-        Input.Update(EntityMan);
-        Physics.Update(EntityMan);
-        Collision.Update(EntityMan);
-        Health.Update(EntityMan);
-        Spawn.Update(EntityMan);
+        // Camera.Update(EntityMan);
+        // Render.Update(EntityMan);
+        // Input.Update(EntityMan);
+        // Physics.Update(EntityMan);
+        // Collision.Update(EntityMan);
+        // Health.Update(EntityMan);
+        // Spawn.Update(EntityMan);
 
-        // timeCall("CAM",[&](){ Camera.Update(EntityMan); } );
-        // timeCall("REN",[&](){ Render.Update(EntityMan); } );
-        // timeCall("INP",[&](){ Input.Update(EntityMan); } );
-        // timeCall("PHY",[&](){ Physics.Update(EntityMan); } );
-        // timeCall("COL",[&](){ Collision.Update(EntityMan); } );
-        // timeCall("HEA",[&](){ Health.Update(EntityMan); } );
-        // timeCall("SPA",[&](){ Spawn.Update(EntityMan); } );
+        timeCall("CAM",[&](){ Camera.Update(EntityMan); } );
+        timeCall("REN",[&](){ Render.Update(EntityMan); } );
+        timeCall("INP",[&](){ Input.Update(EntityMan); } );
+        timeCall("PHY",[&](){ Physics.Update(EntityMan); } );
+        timeCall("COL",[&](){ Collision.Update(EntityMan); } );
+        timeCall("HEA",[&](){ Health.Update(EntityMan); } );
+        timeCall("SPA",[&](){ Spawn.Update(EntityMan); } );
 
-        timer.waitUntil_ns(NSPF);
-        //std::cout << "EXT " << std::setw(6) << std::setfill('0') << timer.waitUntil_ns(NSPF) / 1000 << "\n";
+        //timer.waitUntil_ns(NSPF);
+        std::cout << "EXT " << std::setw(6) << std::setfill('0') << timer.waitUntil_ns(NSPF) / 1000 << "\n";
         timer.start();
 
         if (Input.IsKeyPressed(XK_Escape))

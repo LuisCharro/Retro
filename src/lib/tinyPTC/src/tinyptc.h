@@ -42,12 +42,12 @@ typedef unsigned char char8;
 
 /* This directive enables mmx-optimized pixelformat conversions */
 
-/* #define __PTC_MMX__ */
+//#define __PTC_MMX__
 
 /* This directive enables little-endian pixelformat converters - ignored for
  * the XVideo+Mit-Shm target */
 
-/* #define __PTC_LITTLE_ENDIAN__ */
+//#define __PTC_LITTLE_ENDIAN__ 
 
 /* This directive enables a best-fit video-mode choice logic for DGA 1.x and
  * DGA 2.x targets */
@@ -57,10 +57,11 @@ typedef unsigned char char8;
 /* This directive enables the use of an user-supplied callback that will be
  * triggered upon exit */
 
-/* #define __PTC_CLEANUP_CALLBACK__ */
+//#define __PTC_CLEANUP_CALLBACK__
 
 /* If you uncomment this directive, you'll choose raw xlib video rendering */
 
+//DEFAULT
 #define __PTC_XLIB__
 
 /* If you uncomment this directive, you'll choose X Shared memory extension
@@ -76,17 +77,17 @@ typedef unsigned char char8;
 /* If you uncomment this directive, you'll choose X Direct Graphics Access
  * extension (version 1.x) video rendering */
 
-// #define __PTC_XDGA1__
+//#define __PTC_XDGA1__
 
 /* If you uncomment this directive, you'll choose X Direct Graphics Access
  * extension (version 2.x) video rendering */
 
-// #define __PTC_XDGA2__
+//#define __PTC_XDGA2__
 
 /* If you uncomment this directive, you'll choose XVideo YV12 Accelerated
  * extension video rendering (using shared memory) */
 
-// #define __PTC_XVSHM__
+//#define __PTC_XVSHM__
 
 #ifdef __PTC_WINDOWED__
 #error __PTC_WINDOWED__ is not valid anymore, use __PTC_XLIB__ instead.
@@ -148,6 +149,10 @@ extern int ptc_open(const char *title, int width, int height);
 extern int ptc_update(void *buffer);
 extern void ptc_close(void);
 int ptc_process_events(void);
+
+// Only implemented in xlib by the moment
+//extern void ptc_set_on_keypress  ( void (*onkeypress)  (KeySym) );
+//extern void ptc_set_on_keyrelease( void (*onkeyrelease)(KeySym) );
 
 #ifdef __PTC_CLEANUP_CALLBACK__
 extern void ptc_cleanup_callback(void);
